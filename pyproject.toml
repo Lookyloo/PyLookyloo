@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "pylookyloo"
 version = "1.2"
-description = "Python client for Lookyloo"
+description = "Python CLI and module for Lookyloo"
 authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
-license = "AGPL-3.0-or-later"
-repository = "https://github.com/CIRCL/lookyloo/client"
+license = "BSD-3-Clause"
+repository = "https://github.com/lookyloo/PyLookyloo"
 
 readme = "README.md"
 
 classifiers = [
-    'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
+    'License :: OSI Approved :: BSD License',
     'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Operating System :: POSIX :: Linux',
