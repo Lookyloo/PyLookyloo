@@ -57,7 +57,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'html'))))
         return StringIO(r.text)
 
-    def get_hashes(self, capture_uuid: str) -> BytesIO:
+    def get_hashes(self, capture_uuid: str) -> StringIO:
         r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'hashes'))))
         return StringIO(r.text)
 
