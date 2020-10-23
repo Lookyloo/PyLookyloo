@@ -57,6 +57,14 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'html'))))
         return StringIO(r.text)
 
+    def get_hashes(self, capture_uuid: str) -> BytesIO:
+        r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'hashes'))))
+        return StringIO(r.text)
+
     def get_complete_capture(self, capture_uuid: str) -> BytesIO:
         r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'export'))))
         return BytesIO(r.content)
+
+    def get_hash_occurrences(self, h: str) -> Dict[str, Any]:
+        r = self.session.get(urljoin(self.root_url, str(Path('json', 'hash_info', h))))
+        return r.json()
