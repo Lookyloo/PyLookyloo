@@ -68,3 +68,7 @@ class Lookyloo():
     def get_hash_occurrences(self, h: str) -> Dict[str, Any]:
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'hash_info', h))))
         return r.json()
+
+    def get_url_occurrences(self, url: str) -> Dict[str, Any]:
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'url_info'))), json={'url': url})
+        return r.json()
