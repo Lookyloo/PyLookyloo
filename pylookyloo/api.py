@@ -72,3 +72,7 @@ class Lookyloo():
     def get_url_occurrences(self, url: str) -> Dict[str, Any]:
         r = self.session.post(urljoin(self.root_url, str(Path('json', 'url_info'))), json={'url': url})
         return r.json()
+
+    def get_hostname_occurrences(self, url: str, with_urls_occurrences: bool=False) -> Dict[str, Any]:
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'hostname_info'))), json={'hostname': url, 'with_urls_occurrences': with_urls_occurrences})
+        return r.json()
