@@ -10,7 +10,7 @@ pip install pylookyloo
 
 ## Usage
 
-* You can use the lookyloo command to enqueue an URL.
+* You can use the `lookyloo` command to enqueue a URL.
 
 ```bash
 usage: lookyloo [-h] [--url URL] --query QUERY
@@ -41,7 +41,7 @@ if lookyloo.is_up:  # to make sure it is up and reachable
 ```
 You can add the following paramaters to the enqueue fuction:
 ```
-    quiet      Return only the uuid
+    quiet      Return only the UUID
     listing    Should the report be publicly listed.
     user_agent Set your own user agent
     Depth      Set the analysis depth. Can not be more than in config
