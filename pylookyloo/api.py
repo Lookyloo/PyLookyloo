@@ -120,3 +120,9 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(Path('json', 'hostname_info'))), json={'hostname': hostname,
                                                                                                 'with_urls_occurrences': with_urls_occurrences})
         return r.json()
+
+    def get_stats(self) -> Dict[str, Any]:
+        '''Returns all the captures contining the URL'''
+
+        r = self.session.get(urljoin(self.root_url, str(Path('json', 'stats'))))
+        return r.json()
