@@ -66,3 +66,7 @@ To retrieve the complete capture(raw)
 ```python
     capture = lookyloo.get_complete_capture(uuid)
 ```
+To retrieve the statistiques(json)
+```python
+    capture = lookyloo.get_stats()
+```
