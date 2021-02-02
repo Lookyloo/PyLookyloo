@@ -9,6 +9,14 @@ from pathlib import Path
 import requests
 
 
+class PyLookylooError(Exception):
+    pass
+
+
+class AuthError(PyLookylooError):
+    pass
+
+
 class Lookyloo():
 
     def __init__(self, root_url: str='https://lookyloo.circl.lu/'):
@@ -20,6 +28,7 @@ class Lookyloo():
         if not self.root_url.endswith('/'):
             self.root_url += '/'
         self.session = requests.session()
+        self.apikey: Optional[str] = None
 
     @property
     def is_up(self) -> bool:
@@ -35,7 +44,7 @@ class Lookyloo():
         :param kwargs: accepts all the parameters supported by `Lookyloo.scrape`
         '''
         if not url and 'url' not in kwargs:
-            raise Exception(f'url entry required: {kwargs}')
+            raise PyLookylooError(f'url entry required: {kwargs}')
 
         if url:
             to_send = {'url': url, **kwargs}
@@ -46,6 +55,32 @@ class Lookyloo():
             return response.text
         else:
             return urljoin(self.root_url, f'tree/{response.text}')
+
+    def get_apikey(self, username: str, password: str) -> Dict[str, str]:
+        to_post = {'username': username, 'password': password}
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'get_token'))),
+                              json=to_post)
+        return r.json()
+
+    def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None):
+        if apikey:
+            self.apikey = apikey
+        elif username and password:
+            t = self.get_apikey(username, password)
+            if 'authkey' in t:
+                self.apikey = t['authkey']
+        else:
+            raise AuthError('Username and password required')
+        if self.apikey:
+            self.session.headers['Authorization'] = f'LookylooToken {self.apikey}'
+        else:
+            raise AuthError('Unable to initialize API key')
+
+    def misp_push(self, tree_uuid: str) -> Dict:
+        if not self.apikey:
+            raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
+        r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_push'))))
+        return r.json()
 
     def get_redirects(self, capture_uuid: str) -> Dict[str, Any]:
         '''Returns the initial redirects.
