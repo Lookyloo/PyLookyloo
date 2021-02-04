@@ -72,7 +72,7 @@ class Lookyloo():
         else:
             raise AuthError('Username and password required')
         if self.apikey:
-            self.session.headers['Authorization'] = f'LookylooToken {self.apikey}'
+            self.session.headers['Authorization'] = self.apikey
         else:
             raise AuthError('Unable to initialize API key')
 
