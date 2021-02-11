@@ -95,8 +95,8 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.6"
-content-hash = "2965db4f742032640443a4a4236e40110e5d212c601b108319b25e8e57b50abb"
+python-versions = "^3.7"
+content-hash = "60c30b318b4d933e4f787857166dc2f394833e9374c52b9884a06b1b7a878cb6"
 
 [metadata.files]
 certifi = [

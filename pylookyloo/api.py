@@ -76,6 +76,10 @@ class Lookyloo():
         else:
             raise AuthError('Unable to initialize API key')
 
+    def misp_export(self, tree_uuid: str) -> Dict:
+        r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_export'))))
+        return r.json()
+
     def misp_push(self, tree_uuid: str) -> Dict:
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')

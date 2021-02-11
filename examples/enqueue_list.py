@@ -9,7 +9,7 @@ import requests
 from pylookyloo import Lookyloo
 
 """
-Get all the URLs from a file, check if they are still working (return code <400) Push them to lookyloo.
+Get all the URLs from a file, check if they are still working (return code <400), push them to lookyloo.
 """
 
 list_urls_file = Path('list.txt')
