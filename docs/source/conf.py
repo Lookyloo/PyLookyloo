@@ -52,7 +52,7 @@ exclude_patterns = []
 html_theme = 'alabaster'
 
 html_theme_options = {
-    'page_width': 'auto',
+    'page_width': '1200',
     'body_min_width': '1200',
 }
 
