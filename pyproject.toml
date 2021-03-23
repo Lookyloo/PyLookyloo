@@ -31,9 +31,14 @@ lookyloo = 'pylookyloo:main'
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "^2.22.0"
+Sphinx = { version = "^3.5.3", optional = true }
+myst-parser = { version = "^0.13.5", optional = true }
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.800"
+
+[tool.poetry.extras]
+docs = ["Sphinx", "myst-parser"]
 
 [build-system]
 requires = ["poetry_core>=1.0", "setuptools"]
