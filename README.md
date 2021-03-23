@@ -1,6 +1,8 @@
+[![Documentation Status](https://readthedocs.org/projects/pylookyloo/badge/?version=latest)](https://pylookyloo.readthedocs.io/en/latest/?badge=latest)
+
 # PyLookyloo
 
-This is the client API for [Lookyloo](https://github.com/Lookyloo/lookyloo).
+This is the client API for [Lookyloo](https://www.lookyloo.eu).
 
 ## Installation
 
@@ -10,7 +12,9 @@ pip install pylookyloo
 
 ## Usage
 
-* You can use the `lookyloo` command to enqueue a URL.
+### Command line
+
+You can use the `lookyloo` command to enqueue a URL.
 
 ```bash
 usage: lookyloo [-h] [--url URL] --query QUERY
@@ -28,45 +32,6 @@ optional arguments:
 The response is the permanent URL where you can see the result of the capture.
 ```
 
-* Or as a library
+### Library
 
-```python
-
-from pylookyloo import Lookyloo
-
-lookyloo = Lookyloo('https://url.of.lookyloo.instance')
-if lookyloo.is_up:  # to make sure it is up and reachable
-	permaurl = lookyloo.enqueue('http://url.to.lookup')
-
-```
-You can add the following paramaters to the enqueue fuction:
-```
-    quiet      Return only the UUID
-    listing    Should the report be publicly listed.
-    user_agent Set your own user agent
-    Depth      Set the analysis depth. Can not be more than in config
-```
-To retrieve the redirects (json)
-```python
-    redirect = lookyloo.get_redirects(uuid)
-```
-To retrieve the cookies (json)
-```python
-    cookies = lookyloo.get_cookies(uuid)
-```
-To retrieve the screenshot (raw)
-```python
-    screen = lookyloo.get_screenshot(uuid)
-```
-To retrieve the html (raw)
-```python
-    html = lookyloo.get_html(uuid)
-```
-To retrieve the complete capture(raw)
-```python
-    capture = lookyloo.get_complete_capture(uuid)
-```
-To retrieve the statistiques(json)
-```python
-    capture = lookyloo.get_stats()
-```
+See [API Reference](https://pylookyloo.readthedocs.io/en/latest/api_reference.html)
