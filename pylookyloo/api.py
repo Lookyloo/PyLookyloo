@@ -36,6 +36,16 @@ class Lookyloo():
         r = self.session.head(self.root_url)
         return r.status_code == 200
 
+    def get_status(self, tree_uuid: str) -> Dict[str, Any]:
+        '''Get the status of a capture:
+            * -1: Unknown capture.
+            * 0: The capture is queued up but not processed yet.
+            * 1: The capture is ready.
+            * 2: The capture is ongoing and will be ready soon.
+        '''
+        r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'status'))))
+        return r.json()
+
     def enqueue(self, url: Optional[str]=None, quiet: bool=False, **kwargs) -> str:
         '''Enqueue an URL.
 
