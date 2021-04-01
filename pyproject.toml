@@ -5,6 +5,7 @@ description = "Python CLI and module for Lookyloo"
 authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
 license = "BSD-3-Clause"
 repository = "https://github.com/lookyloo/PyLookyloo"
+documentation = "https://pylookyloo.readthedocs.io/en/latest/"
 
 readme = "README.md"
 
