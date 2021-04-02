@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pylookyloo"
-version = "1.4.1"
+version = "1.5.0"
 description = "Python CLI and module for Lookyloo"
 authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
 license = "BSD-3-Clause"
@@ -30,7 +30,7 @@ include = ['README.md']
 lookyloo = 'pylookyloo:main'
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 requests = "^2.22.0"
 Sphinx = { version = "^3.5.3", optional = true }
 myst-parser = { version = "^0.13.5", optional = true }
