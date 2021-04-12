@@ -3,7 +3,7 @@
 
 from io import BytesIO, StringIO
 from typing import Optional, Dict, Any, List
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from pathlib import Path
 
 import requests
@@ -25,6 +25,9 @@ class Lookyloo():
         :param root_url: URL of the instance to query.
         '''
         self.root_url = root_url
+
+        if not urlparse(self.root_url)[0]:
+           self.root_url = 'http://' + self.root_url
         if not self.root_url.endswith('/'):
             self.root_url += '/'
         self.session = requests.session()
