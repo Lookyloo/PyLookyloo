@@ -26,7 +26,7 @@ class Lookyloo():
         '''
         self.root_url = root_url
 
-        if not urlparse(self.root_url)[0]:
+        if not urlparse(self.root_url).scheme:
            self.root_url = 'http://' + self.root_url
         if not self.root_url.endswith('/'):
             self.root_url += '/'
