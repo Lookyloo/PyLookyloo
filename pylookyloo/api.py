@@ -175,6 +175,10 @@ class Lookyloo():
 
     def get_stats(self) -> Dict[str, Any]:
         '''Returns all the captures contining the URL'''
-
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'stats'))))
+        return r.json()
+
+    def get_capture_status(self, capture_uuid: str) -> str:
+        '''Returns status of a capture'''
+        r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'status'))))
         return r.json()
