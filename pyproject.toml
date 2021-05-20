@@ -31,12 +31,12 @@ lookyloo = 'pylookyloo:main'
 
 [tool.poetry.dependencies]
 python = "^3.8"
-requests = "^2.22.0"
-Sphinx = { version = "^3.5.3", optional = true }
-myst-parser = { version = "^0.13.5", optional = true }
+requests = "^2.25.1"
+Sphinx = { version = "^3.5.4", optional = true }
+myst-parser = { version = "^0.13.7", optional = true }
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.800"
+mypy = "^0.812"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "myst-parser"]
