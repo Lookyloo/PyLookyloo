@@ -70,12 +70,14 @@ class Lookyloo():
             return urljoin(self.root_url, f'tree/{response.text}')
 
     def get_apikey(self, username: str, password: str) -> Dict[str, str]:
+        '''Get the API key for the given user.'''
         to_post = {'username': username, 'password': password}
         r = self.session.post(urljoin(self.root_url, str(Path('json', 'get_token'))),
                               json=to_post)
         return r.json()
 
     def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None):
+        '''Init the API key for the current session. All the requests against lookyloo after this call will be authenticated.'''
         if apikey:
             self.apikey = apikey
         elif username and password:
@@ -90,10 +92,12 @@ class Lookyloo():
             raise AuthError('Unable to initialize API key')
 
     def misp_export(self, tree_uuid: str) -> Dict:
+        '''Export the capture in MISP format'''
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_export'))))
         return r.json()
 
     def misp_push(self, tree_uuid: str) -> Dict:
+        '''Push the capture to a pre-configured MISP instance (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_push'))))
