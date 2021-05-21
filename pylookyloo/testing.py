@@ -25,5 +25,6 @@ class UnitTesting(unittest.TestCase):
     def test_stats_2021(self) -> None:
         self.assertTrue(self.public_instance.get_stats()['years'][1]['yearly_submissions'] > 84100)
 
+
 if __name__ == '__main__':
     unittest.main()
