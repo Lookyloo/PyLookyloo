@@ -22,9 +22,14 @@ class UnitTesting(unittest.TestCase):
     def test_capture(self) -> None:
         # Query a url for capture; save uuid of the capture in a variable
         uuid = self.github_instance.enqueue('http://lookyloo-testing.herokuapp.com/', True)
-        # Wait 60 seconds for the capture to complete (could be reduced)
-        time.sleep(60)
+        seconds_elapsed = 0
         # get_status returns 1 in 'status_code' key if capture is ready
+        while self.github_instance.get_status(uuid)['status_code'] != 1:
+            # Raise exception in case capture takes too long to avoid infinite while loop
+            if seconds_elapsed > 100:
+                raise Exception("Capture time limit exceeded!")
+            time.sleep(1)
+            seconds_elapsed += 1
         self.assertEqual(1, self.github_instance.get_status(uuid)['status_code'])
 
 
