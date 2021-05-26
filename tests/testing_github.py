@@ -21,16 +21,20 @@ class UnitTesting(unittest.TestCase):
     # Check that a capture is properly made
     def test_capture(self) -> None:
         # Query a url for capture; save uuid of the capture in a variable
-        uuid = self.github_instance.enqueue('http://lookyloo-testing.herokuapp.com/', True)
+        uuid = self.github_instance.enqueue('https://lookyloo-testing.herokuapp.com/redirect_http', True)
         seconds_elapsed = 0
         # get_status returns 1 in 'status_code' key if capture is ready
-        while self.github_instance.get_status(uuid)['status_code'] != 1:
+        while status := self.github_instance.get_status(uuid)['status_code'] != 1:
+            if status == -1:
+                raise Exception('The capture failed and was removed.')
             # Raise exception in case capture takes too long to avoid infinite while loop
             if seconds_elapsed > 100:
                 raise Exception("Capture time limit exceeded!")
             time.sleep(1)
             seconds_elapsed += 1
-        self.assertEqual(1, self.github_instance.get_status(uuid)['status_code'])
+        response = self.github_instance.get_redirects(uuid)
+        self.assertEqual('https://lookyloo-testing.herokuapp.com/redirect_http', response['response']['url'])
+        self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][0])
 
 
 if __name__ == '__main__':
