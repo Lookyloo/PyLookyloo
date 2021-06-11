@@ -75,7 +75,10 @@ class Lookyloo():
             to_send = kwargs
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         if quiet:
-            return response.json()
+            try:
+                return response.json()
+            except Exception:
+                return response.text
         else:
             return urljoin(self.root_url, f'tree/{response.text}')
 
