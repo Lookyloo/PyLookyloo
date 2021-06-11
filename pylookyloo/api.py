@@ -27,7 +27,7 @@ class Lookyloo():
         self.root_url = root_url
 
         if not urlparse(self.root_url).scheme:
-           self.root_url = 'http://' + self.root_url
+            self.root_url = 'http://' + self.root_url
         if not self.root_url.endswith('/'):
             self.root_url += '/'
         self.session = requests.session()
@@ -49,6 +49,16 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'status'))))
         return r.json()
 
+    def get_capture_stats(self, tree_uuid: str) -> Dict[str, Any]:
+        '''Get statistics of the capture'''
+        r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'stats'))))
+        return r.json()
+
+    def get_info(self, tree_uuid: str) -> Dict[str, Any]:
+        '''Get information about the capture (url, timestamp, user agent)'''
+        r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'info'))))
+        return r.json()
+
     def enqueue(self, url: Optional[str]=None, quiet: bool=False, **kwargs) -> str:
         '''Enqueue an URL.
 
@@ -65,7 +75,7 @@ class Lookyloo():
             to_send = kwargs
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         if quiet:
-            return response.text
+            return response.json()
         else:
             return urljoin(self.root_url, f'tree/{response.text}')
 
