@@ -85,8 +85,7 @@ class Lookyloo():
     def get_apikey(self, username: str, password: str) -> Dict[str, str]:
         '''Get the API key for the given user.'''
         to_post = {'username': username, 'password': password}
-        r = self.session.post(urljoin(self.root_url, str(Path('json', 'get_token'))),
-                              json=to_post)
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'get_token'))), json=to_post)
         return r.json()
 
     def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None):
@@ -116,6 +115,20 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_push'))))
         return r.json()
 
+    def rebuild_capture(self, tree_uuid: str) -> Dict:
+        '''Force rebuild a capture (requires an authenticated user, use init_apikey first)'''
+        if not self.apikey:
+            raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
+        r = self.session.get(urljoin(self.root_url, str(Path('admin', tree_uuid, 'rebuild'))))
+        return r.json()
+
+    def hide_capture(self, tree_uuid: str) -> Dict:
+        '''Hide a capture from the index page (requires an authenticated user, use init_apikey first)'''
+        if not self.apikey:
+            raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
+        r = self.session.get(urljoin(self.root_url, str(Path('admin', tree_uuid, 'hide'))))
+        return r.json()
+
     def get_redirects(self, capture_uuid: str) -> Dict[str, Any]:
         '''Returns the initial redirects.
 
@@ -124,12 +137,28 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'redirects'))))
         return r.json()
 
+    def get_urls(self, capture_uuid: str) -> Dict[str, Any]:
+        '''Returns all the URLs seen during the capture.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'urls'))))
+        return r.json()
+
+    def get_hostnames(self, capture_uuid: str) -> Dict[str, Any]:
+        '''Returns all the hostnames seen during the capture.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'hostnames'))))
+        return r.json()
+
     def get_screenshot(self, capture_uuid: str) -> BytesIO:
         '''Returns the screenshot.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'image'))))
+        r = self.session.get(urljoin(self.root_url, str(Path('bin', capture_uuid, 'screenshot'))))
         return BytesIO(r.content)
 
     def get_cookies(self, capture_uuid: str) -> List[Dict[str, str]]:
@@ -137,7 +166,7 @@ class Lookyloo():
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'cookies'))))
+        r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'cookies'))))
         return r.json()
 
     def get_html(self, capture_uuid: str) -> StringIO:
@@ -153,15 +182,15 @@ class Lookyloo():
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'hashes'))))
-        return StringIO(r.text)
+        r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'hashes'))))
+        return r.json()
 
     def get_complete_capture(self, capture_uuid: str) -> BytesIO:
         '''Returns a zip files that contains the screenshot, the har, the rendered HTML, and the cookies.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'export'))))
+        r = self.session.get(urljoin(self.root_url, str(Path('bin', capture_uuid, 'export'))))
         return BytesIO(r.content)
 
     def get_hash_occurrences(self, h: str) -> Dict[str, Any]:
