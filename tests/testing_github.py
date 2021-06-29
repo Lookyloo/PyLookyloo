@@ -40,6 +40,7 @@ class UnitTesting(unittest.TestCase):
         self.assertEqual('https://lookyloo-testing.herokuapp.com/redirect_http', response['response']['url'])
         self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][0])
 
+    @unittest.skip("Skipping for now, it requires the restx branch to be merged to work.")
     def test_referer(self) -> None:
         uuid = self.github_instance.enqueue('https://lookyloo-testing.herokuapp.com/referer', True)
         self._wait_capture_done(uuid)
