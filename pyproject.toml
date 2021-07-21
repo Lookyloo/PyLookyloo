@@ -31,7 +31,7 @@ lookyloo = 'pylookyloo:main'
 
 [tool.poetry.dependencies]
 python = "^3.8"
-requests = "^2.25.1"
+requests = "^2.26.0"
 Sphinx = { version = "^4.0.2", optional = true }
 
 [tool.poetry.dev-dependencies]
