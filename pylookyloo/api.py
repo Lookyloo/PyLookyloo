@@ -115,6 +115,15 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_push'))))
         return r.json()
 
+    def trigger_modules(self, tree_uuid: str, force: bool=False) -> Dict:
+        '''Trigger all the available 3rd party modules on the given capture.
+        :param force: Trigger the modules even if they were already triggered today.
+        '''
+        to_send = {'force': force}
+        r = self.session.post(urljoin(self.root_url, str(Path('json', tree_uuid, 'trigger_modules'))),
+                              json=to_send)
+        return r.json()
+
     def rebuild_capture(self, tree_uuid: str) -> Dict:
         '''Force rebuild a capture (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
