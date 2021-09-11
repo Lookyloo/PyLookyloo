@@ -75,12 +75,9 @@ class Lookyloo():
             to_send = kwargs
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         if quiet:
-            try:
-                return response.json()
-            except Exception:
-                return response.text
+            return response.json()
         else:
-            return urljoin(self.root_url, f'tree/{response.text}')
+            return urljoin(self.root_url, f'tree/{response.json()}')
 
     def get_apikey(self, username: str, password: str) -> Dict[str, str]:
         '''Get the API key for the given user.'''
