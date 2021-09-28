@@ -32,11 +32,11 @@ lookyloo = 'pylookyloo:main'
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.26.0"
-Sphinx = { version = "^4.0.2", optional = true }
+Sphinx = { version = "^4.2.0", optional = true }
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
-types-requests = "^2.25.0"
+types-requests = "^2.25.9"
 
 [tool.poetry.extras]
 docs = ["Sphinx"]
