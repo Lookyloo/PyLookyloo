@@ -4,7 +4,7 @@ from setuptools import setup  # type: ignore
 
 setup(
     name='pylookyloo',
-    version='1.9-dev',
+    version='1.10-dev',
     author='Raphaël Vinot',
     author_email='raphael.vinot@circl.lu',
     maintainer='Raphaël Vinot',
