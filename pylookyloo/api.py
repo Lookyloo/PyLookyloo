@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from io import BytesIO, StringIO
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 from urllib.parse import urljoin, urlparse
 from pathlib import Path
 
@@ -184,12 +184,16 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('tree', capture_uuid, 'html'))))
         return StringIO(r.text)
 
-    def get_hashes(self, capture_uuid: str) -> StringIO:
+    def get_hashes(self, capture_uuid: str, algorithm: str='sha512', hashes_only: bool=True) -> StringIO:
         '''Returns all the hashes of all the bodies (including the embedded contents)
 
         :param capture_uuid: UUID of the capture
+        :param algorithm: The algorithm of the hashes
+        :param hashes_only: If False, will also return the URLs related to the hashes
         '''
-        r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'hashes'))))
+        params: Dict[str, Union[str, int]] = {'algorithm': algorithm, 'hashes_only': int(hashes_only)}
+
+        r = self.session.get(urljoin(self.root_url, str(Path('json', capture_uuid, 'hashes'))), params=params)
         return r.json()
 
     def get_complete_capture(self, capture_uuid: str) -> BytesIO:
