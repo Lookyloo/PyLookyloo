@@ -106,8 +106,10 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_export'))))
         return r.json()
 
-    def misp_push(self, tree_uuid: str) -> Dict:
-        '''Push the capture to a pre-configured MISP instance (requires an authenticated user, use init_apikey first)'''
+    def misp_push(self, tree_uuid: str) -> Union[Dict, List]:
+        '''Push the capture to a pre-configured MISP instance (requires an authenticated user, use init_apikey first)
+        Note: if the response is a dict, it is an error mesage. If it is a list, it's a list of MISP event.
+        '''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_push'))))
