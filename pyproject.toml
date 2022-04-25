@@ -35,7 +35,7 @@ requests = "^2.27.1"
 Sphinx = { version = "^4.4.0", optional = true }
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.931"
+mypy = "^0.942"
 types-requests = "^2.27.7"
 ipython = "^8.0.1"
 
