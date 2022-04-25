@@ -38,7 +38,7 @@ class UnitTesting(unittest.TestCase):
         self._wait_capture_done(uuid)
         response = self.github_instance.get_redirects(uuid)
         self.assertEqual('https://lookyloo-testing.herokuapp.com/redirect_http', response['response']['url'])
-        self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][0])
+        self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][1])
 
     def test_referer(self) -> None:
         uuid = self.github_instance.enqueue('https://lookyloo-testing.herokuapp.com/referer', True)
@@ -52,9 +52,7 @@ class UnitTesting(unittest.TestCase):
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
         self.assertEqual('https://lookyloo-testing.herokuapp.com/referer', response['url'])
-        self.assertEqual('http://circl.lu', response['referer'])
-        response = self.github_instance.get_redirects(uuid)
-        self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][-1])
+        self.assertEqual('http://circl.lu/', response['referer'])
 
 
 if __name__ == '__main__':
