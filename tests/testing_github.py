@@ -3,6 +3,9 @@
 
 import unittest
 import time
+
+import requests
+
 from pylookyloo import Lookyloo
 
 
@@ -26,6 +29,8 @@ class UnitTesting(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         setattr(cls, "github_instance", Lookyloo('http://127.0.0.1:5100'))
+        requests.head('https://lookyloo-testing.herokuapp.com/')
+        time.sleep(10)
 
     # Check that the local instance (started in github actions of lookyloo) is up
     def test_github_instance_is_up(self) -> None:
