@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import base64
+
 from io import BytesIO, StringIO
 from typing import Optional, Dict, Any, List, Union
 from urllib.parse import urljoin, urlparse
@@ -59,20 +61,37 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'info'))))
         return r.json()
 
-    def enqueue(self, url: Optional[str]=None, quiet: bool=False, **kwargs) -> str:
+    def enqueue(self, url: Optional[str]=None, quiet: bool=False,
+                document: Optional[Union[Path, BytesIO]]=None,
+                document_name: Optional[str]=None, **kwargs) -> str:
         '''Enqueue an URL.
 
         :param url: URL to enqueue
         :param quiet: Returns the UUID only, instead of the whole URL
+        :param document: A document to submit to Lookyloo. It can be anything suported by a browser.
+        :param document_name: The name of the document (only if you passed a pseudofile).
         :param kwargs: accepts all the parameters supported by `Lookyloo.scrape`
         '''
-        if not url and 'url' not in kwargs:
-            raise PyLookylooError(f'url entry required: {kwargs}')
+        if 'document' in kwargs:
+            document = kwargs.pop('document')
+        if 'document_name' in kwargs:
+            document_name = kwargs.pop('document_name')
+        if 'url' in kwargs:
+            url = kwargs.pop('url')
 
-        if url:
+        if document:
+            if isinstance(document, Path):
+                if not document_name:
+                    document_name = document.name
+                with document.open('rb') as f:
+                    document = BytesIO(f.read())
+            b64_doc = base64.b64encode(document.getvalue()).decode()
+            to_send = {'document': b64_doc, 'document_name': document_name, **kwargs}
+        elif url:
             to_send = {'url': url, **kwargs}
         else:
-            to_send = kwargs
+            raise PyLookylooError(f'url or document are required: {kwargs}')
+
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         uuid = response.json()
         if quiet:
