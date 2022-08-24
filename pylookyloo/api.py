@@ -41,7 +41,10 @@ class Lookyloo():
     @property
     def is_up(self) -> bool:
         '''Test if the given instance is accessible'''
-        r = self.session.head(self.root_url)
+        try:
+            r = self.session.head(self.root_url)
+        except requests.exceptions.ConnectionError:
+            return False
         return r.status_code == 200
 
     def get_status(self, tree_uuid: str) -> Dict[str, Any]:
@@ -73,7 +76,7 @@ class Lookyloo():
         :param quiet: Returns the UUID only, instead of the whole URL
         :param document: A document to submit to Lookyloo. It can be anything suported by a browser.
         :param document_name: The name of the document (only if you passed a pseudofile).
-        :param kwargs: accepts all the parameters supported by `Lookyloo.scrape`
+        :param kwargs: accepts all the parameters supported by `Lookyloo.capture`
         '''
         if 'document' in kwargs:
             document = kwargs.pop('document')
