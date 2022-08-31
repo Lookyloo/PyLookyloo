@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import base64
-import pkg_resources
 
+from importlib.metadata import version
 from io import BytesIO, StringIO
 from typing import Optional, Dict, Any, List, Union
 from urllib.parse import urljoin, urlparse
@@ -35,7 +35,7 @@ class Lookyloo():
         if not self.root_url.endswith('/'):
             self.root_url += '/'
         self.session = requests.session()
-        self.session.headers['user-agent'] = useragent if useragent else f'PyLookyloo / {pkg_resources.get_distribution("pylookyloo").version}'
+        self.session.headers['user-agent'] = useragent if useragent else f'PyLookyloo / {version("pylookyloo")}'
         self.apikey: Optional[str] = None
 
     @property
