@@ -99,6 +99,7 @@ class Lookyloo():
             raise PyLookylooError(f'url or document are required: {kwargs}')
 
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
+        response.raise_for_status()
         uuid = response.json()
         if quiet:
             return uuid
