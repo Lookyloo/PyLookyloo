@@ -42,6 +42,7 @@ class UnitTesting(unittest.TestCase):
         uuid = self.github_instance.enqueue('https://lookyloo-testing.herokuapp.com/redirect_http', True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_redirects(uuid)
+        print(response)
         self.assertEqual('https://lookyloo-testing.herokuapp.com/redirect_http', response['response']['url'])
         self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][1])
 
