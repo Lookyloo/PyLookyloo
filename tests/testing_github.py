@@ -29,7 +29,7 @@ class UnitTesting(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         setattr(cls, "github_instance", Lookyloo('http://127.0.0.1:5100'))
-        requests.head('https://lookyloo-testing.herokuapp.com/')
+        requests.head('https://rafiot.eu.pythonanywhere.com/')
         time.sleep(10)
 
     # Check that the local instance (started in github actions of lookyloo) is up
@@ -39,25 +39,25 @@ class UnitTesting(unittest.TestCase):
     # Check that a capture is properly made
     def test_capture(self) -> None:
         # Query a url for capture; save uuid of the capture in a variable
-        uuid = self.github_instance.enqueue('https://lookyloo-testing.herokuapp.com/redirect_http', True)
+        uuid = self.github_instance.enqueue('https://rafiot.eu.pythonanywhere.com/redirect_http', True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_redirects(uuid)
         print(response)
-        self.assertEqual('https://lookyloo-testing.herokuapp.com/redirect_http', response['response']['url'])
+        self.assertEqual('https://rafiot.eu.pythonanywhere.com/redirect_http', response['response']['url'])
         self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][1])
 
     def test_referer(self) -> None:
-        uuid = self.github_instance.enqueue('https://lookyloo-testing.herokuapp.com/referer', True)
+        uuid = self.github_instance.enqueue('https://rafiot.eu.pythonanywhere.com/referer', True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
-        self.assertEqual('https://lookyloo-testing.herokuapp.com/referer', response['url'])
+        self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
         self.assertFalse(response.get('referer'))
         response = self.github_instance.get_redirects(uuid)
         self.assertEqual('https://www.google.dk/', response['response']['redirects'][-1])
-        uuid = self.github_instance.enqueue('https://lookyloo-testing.herokuapp.com/referer', True, referer='http://circl.lu')
+        uuid = self.github_instance.enqueue('https://rafiot.eu.pythonanywhere.com/referer', True, referer='http://circl.lu')
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
-        self.assertEqual('https://lookyloo-testing.herokuapp.com/referer', response['url'])
+        self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
         self.assertEqual('http://circl.lu/', response['referer'])
 
 
