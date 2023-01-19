@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pylookyloo"
-version = "1.17.0"
+version = "1.17.1"
 description = "Python CLI and module for Lookyloo"
 authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
 license = "BSD-3-Clause"
