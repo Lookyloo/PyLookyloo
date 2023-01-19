@@ -240,22 +240,26 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'hash_info', h))))
         return r.json()
 
-    def get_url_occurrences(self, url: str) -> Dict[str, Any]:
+    def get_url_occurrences(self, url: str, limit: int=20) -> Dict[str, Any]:
         '''Returns all the captures contining the URL
 
         :param url: URL to lookup
+        :param limit: The max amount of entries to return.
         '''
-        r = self.session.post(urljoin(self.root_url, str(Path('json', 'url_info'))), json={'url': url})
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'url_info'))), json={'url': url,
+                                                                                           'limit': limit})
         return r.json()
 
-    def get_hostname_occurrences(self, hostname: str, with_urls_occurrences: bool=False) -> Dict[str, Any]:
+    def get_hostname_occurrences(self, hostname: str, with_urls_occurrences: bool=False, limit: int=20) -> Dict[str, Any]:
         '''Returns all the captures contining the hostname. It will be pretty slow on very common domains.
 
         :param hostname: Hostname to lookup
         :param with_urls_occurrences: If true, add details about the related URLs.
+        :param limit: The max amount of entries to return.
         '''
         r = self.session.post(urljoin(self.root_url, str(Path('json', 'hostname_info'))), json={'hostname': hostname,
-                                                                                                'with_urls_occurrences': with_urls_occurrences})
+                                                                                                'with_urls_occurrences': with_urls_occurrences,
+                                                                                                'limit': limit})
         return r.json()
 
     def get_stats(self) -> Dict[str, Any]:
