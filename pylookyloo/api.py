@@ -269,3 +269,22 @@ class Lookyloo():
 
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'stats'))))
         return r.json()
+
+    def get_takedown_information(self, capture_uuid: str) -> Dict[str, Any]:
+        '''Returns information required to request a takedown for a capture
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'takedown'))),
+                              json={'capture_uuid': capture_uuid})
+        return r.json()
+
+    def compare_captures(self, capture_left: str, capture_right: str) -> Dict[str, Any]:
+        '''Compares two captures
+
+        :param capture_left: UUID of the capture to compare from
+        :param capture_right: UUID of the capture to compare to
+        '''
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'compare_captures'))),
+                              json={'capture_left': capture_left, 'capture_right': capture_right})
+        return r.json()
