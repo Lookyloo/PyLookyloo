@@ -37,9 +37,6 @@ class CaptureSettings(TypedDict, total=False):
     http_credentials: Optional[Dict[str, int]]
     viewport: Optional[Dict[str, int]]
     referer: Optional[str]
-    force: Optional[bool]
-    recapture_interval: Optional[int]
-    priority: Optional[int]
 
 
 class Lookyloo():
