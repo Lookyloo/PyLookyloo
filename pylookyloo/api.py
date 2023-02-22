@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import base64
+import warnings
 
 from importlib.metadata import version
 from io import BytesIO, StringIO
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List, Union, TypedDict, overload
 from urllib.parse import urljoin, urlparse
 from pathlib import Path
 
@@ -18,6 +19,27 @@ class PyLookylooError(Exception):
 
 class AuthError(PyLookylooError):
     pass
+
+
+class CaptureSettings(TypedDict, total=False):
+    '''The capture settings that can be passed to Lookyloo.'''
+
+    url: Optional[str]
+    document_name: Optional[str]
+    document: Optional[str]
+    browser: Optional[str]
+    device_name: Optional[str]
+    user_agent: Optional[str]
+    proxy: Optional[Union[str, Dict[str, str]]]
+    general_timeout_in_sec: Optional[int]
+    cookies: Optional[List[Dict[str, Any]]]
+    headers: Optional[Union[str, Dict[str, str]]]
+    http_credentials: Optional[Dict[str, int]]
+    viewport: Optional[Dict[str, int]]
+    referer: Optional[str]
+    force: Optional[bool]
+    recapture_interval: Optional[int]
+    priority: Optional[int]
 
 
 class Lookyloo():
@@ -78,33 +100,113 @@ class Lookyloo():
         :param document_name: The name of the document (only if you passed a pseudofile).
         :param kwargs: accepts all the parameters supported by `Lookyloo.capture`
         '''
-        if 'document' in kwargs:
-            document = kwargs.pop('document')
-        if 'document_name' in kwargs:
-            document_name = kwargs.pop('document_name')
-        if 'url' in kwargs:
-            url = kwargs.pop('url')
+        warnings.warn('Please use submit instead.', DeprecationWarning, stacklevel=2)
+        return self.submit(quiet=quiet, url=url, document=document, document_name=document_name,
+                           **kwargs)
 
-        if document:
-            if isinstance(document, Path):
-                if not document_name:
-                    document_name = document.name
-                with document.open('rb') as f:
-                    document = BytesIO(f.read())
-            b64_doc = base64.b64encode(document.getvalue()).decode()
-            to_send = {'document': b64_doc, 'document_name': document_name, **kwargs}
-        elif url:
-            to_send = {'url': url, **kwargs}
+    @overload
+    def submit(self, *, quiet: bool=False,
+               capture_settings: Optional[CaptureSettings]=None) -> str:
+        ...
+
+    @overload
+    def submit(self, *, quiet: bool=False,
+               url: Optional[str]=None,
+               document_name: Optional[str]=None, document: Optional[Union[Path, BytesIO]]=None,
+               browser: Optional[str]=None, device_name: Optional[str]=None,
+               user_agent: Optional[str]=None,
+               proxy: Optional[Union[str, Dict[str, str]]]=None,
+               general_timeout_in_sec: Optional[int]=None,
+               cookies: Optional[List[Dict[str, Any]]]=None,
+               headers: Optional[Union[str, Dict[str, str]]]=None,
+               http_credentials: Optional[Dict[str, int]]=None,
+               viewport: Optional[Dict[str, int]]=None,
+               referer: Optional[str]=None,
+               ) -> str:
+        ...
+
+    def submit(self, *, quiet: bool=False,
+               capture_settings: Optional[CaptureSettings]=None,
+               url: Optional[str]=None,
+               document_name: Optional[str]=None, document: Optional[Union[Path, BytesIO]]=None,
+               browser: Optional[str]=None, device_name: Optional[str]=None,
+               user_agent: Optional[str]=None,
+               proxy: Optional[Union[str, Dict[str, str]]]=None,
+               general_timeout_in_sec: Optional[int]=None,
+               cookies: Optional[List[Dict[str, Any]]]=None,
+               headers: Optional[Union[str, Dict[str, str]]]=None,
+               http_credentials: Optional[Dict[str, int]]=None,
+               viewport: Optional[Dict[str, int]]=None,
+               referer: Optional[str]=None,
+               ) -> str:
+        '''Submit a URL to a lookyloo instance.
+
+        :param quiet: Returns the UUID only, instead of the whole URL
+
+        :param capture_settings: Settings as a dictionary. It overwrites all other parmeters.
+
+        :param url: URL to capture (incompatible with document and document_name)
+        :param document_name: Filename of the document to capture (required if document is used)
+        :param document: Document to capture itself (requires a document_name)
+        :param browser: The browser to use for the capture, must be something Playwright knows
+        :param device_name: The name of the device, must be something Playwright knows
+        :param user_agent: The user agent the browser will use for the capture
+        :param proxy: SOCKS5 proxy to use for capturing
+        :param general_timeout_in_sec: The capture will raise a timeout it it takes more than that time
+        :param cookies: A list of cookies
+        :param headers: The headers to pass to the capture
+        :param http_credentials: HTTP Credentials to pass to the capture
+        :param viewport: The viewport of the browser used for capturing
+        :param referer: The referer URL for the capture
+        '''
+        to_send: CaptureSettings
+        if capture_settings:
+            to_send = capture_settings
+            if 'document' not in to_send and 'url' not in to_send:
+                raise PyLookylooError('url or document are required')
         else:
-            raise PyLookylooError(f'url or document are required: {kwargs}')
+            if not document and not url:
+                raise PyLookylooError('url or document are required')
+            if document:
+                if isinstance(document, Path):
+                    if not document_name:
+                        document_name = document.name
+                    with document.open('rb') as f:
+                        document = BytesIO(f.read())
+                b64_doc = base64.b64encode(document.getvalue()).decode()
+                to_send = {'document': b64_doc, 'document_name': document_name}
+            elif url:
+                to_send = {'url': url}
+
+            if browser:
+                to_send['browser'] = browser
+            if device_name:
+                to_send['device_name'] = device_name
+            if user_agent:
+                to_send['user_agent'] = user_agent
+            if proxy:
+                to_send['proxy'] = proxy
+            if general_timeout_in_sec is not None:  # that would be a terrible i
+                to_send['general_timeout_in_sec'] = general_timeout_in_sec
+            if cookies:
+                to_send['cookies'] = cookies
+            if headers:
+                to_send['headers'] = headers
+            if http_credentials:
+                to_send['http_credentials'] = http_credentials
+            if viewport:
+                to_send['viewport'] = viewport
+            if referer:
+                to_send['referer'] = referer
 
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         response.raise_for_status()
         uuid = response.json()
+        if not uuid:
+            raise PyLookylooError('Unable to get UUID from lookyloo instance.')
         if quiet:
             return uuid
-        else:
-            return urljoin(self.root_url, f'tree/{uuid}')
+        return urljoin(self.root_url, f'tree/{uuid}')
 
     def get_apikey(self, username: str, password: str) -> Dict[str, str]:
         '''Get the API key for the given user.'''
