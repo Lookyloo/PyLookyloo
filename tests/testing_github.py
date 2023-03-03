@@ -39,7 +39,7 @@ class UnitTesting(unittest.TestCase):
     # Check that a capture is properly made
     def test_capture(self) -> None:
         # Query a url for capture; save uuid of the capture in a variable
-        uuid = self.github_instance.enqueue('https://rafiot.eu.pythonanywhere.com/redirect_http', True)
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/redirect_http', quiet=True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_redirects(uuid)
         print(response)
@@ -47,14 +47,14 @@ class UnitTesting(unittest.TestCase):
         self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][1])
 
     def test_referer(self) -> None:
-        uuid = self.github_instance.enqueue('https://rafiot.eu.pythonanywhere.com/referer', True)
+        uuid = self.github_instance.enqueue(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
         self.assertFalse(response.get('referer'))
         response = self.github_instance.get_redirects(uuid)
         self.assertEqual('https://www.google.dk/', response['response']['redirects'][-1])
-        uuid = self.github_instance.enqueue('https://rafiot.eu.pythonanywhere.com/referer', True, referer='http://circl.lu')
+        uuid = self.github_instance.enqueue(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True, referer='http://circl.lu')
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
