@@ -18,6 +18,7 @@ class UnitTesting(unittest.TestCase):
 
         # get_status returns 1 in 'status_code' key if capture is ready
         while status := self.github_instance.get_status(uuid)['status_code'] != 1:
+            print(status)
             if status == -1:
                 raise Exception('The capture failed and was removed.')
             # Raise exception in case capture takes too long to avoid infinite while loop
@@ -47,14 +48,14 @@ class UnitTesting(unittest.TestCase):
         self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][1])
 
     def test_referer(self) -> None:
-        uuid = self.github_instance.enqueue(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True)
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
         self.assertFalse(response.get('referer'))
         response = self.github_instance.get_redirects(uuid)
         self.assertEqual('https://www.google.dk/', response['response']['redirects'][-1])
-        uuid = self.github_instance.enqueue(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True, referer='http://circl.lu')
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True, referer='http://circl.lu')
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
