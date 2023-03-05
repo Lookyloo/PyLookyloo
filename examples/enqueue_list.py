@@ -32,7 +32,7 @@ for url in urls:
         print(url)
         response = requests.head(url, allow_redirects=True, timeout=3)
         response.raise_for_status()
-        permaurl = lookyloo.enqueue(url, listing=False)
+        permaurl = lookyloo.submit(url=url, listing=False)
         print(f'Enqueued: {url} - Permaurl: {permaurl}')
     except Exception as e:
         print(f"{url} is down: {e}")
