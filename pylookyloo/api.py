@@ -38,6 +38,8 @@ class CaptureSettings(TypedDict, total=False):
     viewport: Optional[Dict[str, int]]
     referer: Optional[str]
 
+    listing: Optional[bool]
+
 
 class Lookyloo():
 
@@ -119,6 +121,7 @@ class Lookyloo():
                http_credentials: Optional[Dict[str, int]]=None,
                viewport: Optional[Dict[str, int]]=None,
                referer: Optional[str]=None,
+               listing: Optional[bool]=None,
                ) -> str:
         ...
 
@@ -135,6 +138,7 @@ class Lookyloo():
                http_credentials: Optional[Dict[str, int]]=None,
                viewport: Optional[Dict[str, int]]=None,
                referer: Optional[str]=None,
+               listing: Optional[bool]=None,
                ) -> str:
         '''Submit a URL to a lookyloo instance.
 
@@ -155,6 +159,7 @@ class Lookyloo():
         :param http_credentials: HTTP Credentials to pass to the capture
         :param viewport: The viewport of the browser used for capturing
         :param referer: The referer URL for the capture
+        :param listing: If False, the capture will be not be on the publicly accessible index page of lookyloo
         '''
         to_send: CaptureSettings
         if capture_settings:
@@ -195,6 +200,8 @@ class Lookyloo():
                 to_send['viewport'] = viewport
             if referer:
                 to_send['referer'] = referer
+            if listing is not None:
+                to_send['listing'] = listing
 
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         response.raise_for_status()
