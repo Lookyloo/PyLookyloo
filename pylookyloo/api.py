@@ -41,6 +41,13 @@ class CaptureSettings(TypedDict, total=False):
     listing: Optional[bool]
 
 
+class CompareSettings(TypedDict, total=False):
+    '''The settings that can be passed to the compare method on lookyloo side to filter out some differences'''
+
+    ressources_ignore_domains: Optional[List[str]]
+    ressources_ignore_regexes: Optional[List[str]]
+
+
 class Lookyloo():
 
     def __init__(self, root_url: str='https://lookyloo.circl.lu/', useragent: Optional[str]=None):
@@ -385,12 +392,15 @@ class Lookyloo():
                               json={'capture_uuid': capture_uuid})
         return r.json()
 
-    def compare_captures(self, capture_left: str, capture_right: str) -> Dict[str, Any]:
+    def compare_captures(self, capture_left: str, capture_right: str, /, *, compare_settings: Optional[CompareSettings]=None) -> Dict[str, Any]:
         '''Compares two captures
 
         :param capture_left: UUID of the capture to compare from
         :param capture_right: UUID of the capture to compare to
+        :param compare_settings: The settings for the comparison itself (what to ignore without marking the captures as different)
         '''
         r = self.session.post(urljoin(self.root_url, str(Path('json', 'compare_captures'))),
-                              json={'capture_left': capture_left, 'capture_right': capture_right})
+                              json={'capture_left': capture_left,
+                                    'capture_right': capture_right,
+                                    'compare_settings': compare_settings})
         return r.json()
