@@ -61,6 +61,12 @@ class UnitTesting(unittest.TestCase):
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
         self.assertEqual('http://circl.lu/', response['referer'])
 
+    def test_comparables(self) -> None:
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True)
+        self._wait_capture_done(uuid)
+        response = self.github_instance.get_comparables(uuid)
+        self.assertEqual(200, response['final_status_code'])
+
 
 if __name__ == '__main__':
     unittest.main()

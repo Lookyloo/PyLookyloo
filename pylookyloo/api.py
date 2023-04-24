@@ -95,6 +95,11 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'info'))))
         return r.json()
 
+    def get_comparables(self, tree_uuid: str) -> Dict[str, Any]:
+        '''Get comparable information from the capture'''
+        r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'comparables'))))
+        return r.json()
+
     def enqueue(self, url: Optional[str]=None, quiet: bool=False,
                 document: Optional[Union[Path, BytesIO]]=None,
                 document_name: Optional[str]=None, **kwargs) -> str:
