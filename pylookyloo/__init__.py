@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from .api import Lookyloo
+from .api import Lookyloo, CaptureSettings  # noqa
 
 
 def main():
