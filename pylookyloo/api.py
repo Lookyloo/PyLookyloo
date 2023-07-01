@@ -35,6 +35,10 @@ class CaptureSettings(TypedDict, total=False):
     cookies: Optional[List[Dict[str, Any]]]
     headers: Optional[Union[str, Dict[str, str]]]
     http_credentials: Optional[Dict[str, int]]
+    geolocation: Optional[Dict[str, float]]
+    timezone_id: Optional[str]
+    locale: Optional[str]
+    color_scheme: Optional[str]
     viewport: Optional[Dict[str, int]]
     referer: Optional[str]
 
@@ -132,6 +136,10 @@ class Lookyloo():
                cookies: Optional[List[Dict[str, Any]]]=None,
                headers: Optional[Union[str, Dict[str, str]]]=None,
                http_credentials: Optional[Dict[str, int]]=None,
+               geolocation: Optional[Dict[str, float]]=None,
+               timezone_id: Optional[str]=None,
+               locale: Optional[str]=None,
+               color_scheme: Optional[str]=None,
                viewport: Optional[Dict[str, int]]=None,
                referer: Optional[str]=None,
                listing: Optional[bool]=None,
@@ -150,6 +158,10 @@ class Lookyloo():
                cookies: Optional[List[Dict[str, Any]]]=None,
                headers: Optional[Union[str, Dict[str, str]]]=None,
                http_credentials: Optional[Dict[str, int]]=None,
+               geolocation: Optional[Dict[str, float]]=None,
+               timezone_id: Optional[str]=None,
+               locale: Optional[str]=None,
+               color_scheme: Optional[str]=None,
                viewport: Optional[Dict[str, int]]=None,
                referer: Optional[str]=None,
                listing: Optional[bool]=None,
@@ -172,6 +184,10 @@ class Lookyloo():
         :param cookies: A list of cookies
         :param headers: The headers to pass to the capture
         :param http_credentials: HTTP Credentials to pass to the capture
+        :param geolocation: The geolocation of the browser latitude/longitude
+        :param timezone_id: The timezone, warning, it m ust be a valid timezone (continent/city)
+        :param locale: The locale of the browser
+        :param color_scheme: The prefered color scheme of the browser (light or dark)
         :param viewport: The viewport of the browser used for capturing
         :param referer: The referer URL for the capture
         :param listing: If False, the capture will be not be on the publicly accessible index page of lookyloo
@@ -215,6 +231,14 @@ class Lookyloo():
                 to_send['headers'] = headers
             if http_credentials:
                 to_send['http_credentials'] = http_credentials
+            if geolocation:
+                to_send['geolocation'] = geolocation
+            if timezone_id:
+                to_send['timezone_id'] = timezone_id
+            if locale:
+                to_send['locale'] = locale
+            if color_scheme:
+                to_send['color_scheme'] = color_scheme
             if viewport:
                 to_send['viewport'] = viewport
             if referer:
