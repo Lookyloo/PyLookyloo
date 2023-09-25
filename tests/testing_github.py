@@ -18,7 +18,6 @@ class UnitTesting(unittest.TestCase):
 
         # get_status returns 1 in 'status_code' key if capture is ready
         while status := self.github_instance.get_status(uuid)['status_code'] != 1:
-            print(status)
             if status == -1:
                 raise Exception('The capture failed and was removed.')
             # Raise exception in case capture takes too long to avoid infinite while loop
@@ -66,6 +65,43 @@ class UnitTesting(unittest.TestCase):
         self._wait_capture_done(uuid)
         response = self.github_instance.get_comparables(uuid)
         self.assertEqual(200, response['final_status_code'])
+
+    def test_capture_settings(self) -> None:
+        # uuid = self.github_instance.submit(url='http://127.0.0.1:5000/all_settings',
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/all_settings',
+                                           user_agent="MyTestAgent",
+                                           headers={'Manual-Test': "blahhh", "DNT": "1"},
+                                           geolocation={'latitude': 50, 'longitude': 40},
+                                           timezone_id='Europe/Berlin',
+                                           locale='en_US',
+                                           color_scheme="dark",
+                                           referer="https://circl.lu",
+                                           quiet=True)
+        self._wait_capture_done(uuid)
+        cookies = self.github_instance.get_cookies(uuid)
+        for cookie in cookies:
+            if cookie['name'] == 'manual_test_header':
+                self.assertEqual(cookie['value'], 'blahhh', cookie.get('value'))
+            elif cookie['name'] == 'referer':
+                self.assertEqual(cookie['value'], 'https://circl.lu', cookie.get('value'))
+            elif cookie['name'] == 'user_agent':
+                self.assertEqual(cookie['value'], 'MyTestAgent', cookie.get('value'))
+            elif cookie['name'] == 'dnt':
+                self.assertEqual(cookie['value'], '1', cookie.get('value'))
+            elif cookie['name'] == 'timezone':
+                self.assertEqual(cookie['value'], 'Europe/Berlin', cookie.get('value'))
+            elif cookie['name'] == 'locale':
+                self.assertEqual(cookie['value'], 'en_US', cookie.get('value'))
+            elif cookie['name'] == 'color_scheme':
+                self.assertEqual(cookie['value'], 'dark', cookie.get('value'))
+            elif cookie['name'] == 'mobile':
+                self.assertEqual(cookie['value'], '', cookie.get('value'))
+            elif cookie['name'] == 'latitude':
+                self.assertEqual(cookie['value'], '50', cookie.get('value'))
+            elif cookie['name'] == 'longitude':
+                self.assertEqual(cookie['value'], '40', cookie.get('value'))
+            else:
+                raise Exception(cookie)
 
 
 if __name__ == '__main__':
