@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import json
 import unittest
 import time
 
@@ -79,6 +80,7 @@ class UnitTesting(unittest.TestCase):
                                            quiet=True)
         self._wait_capture_done(uuid)
         cookies = self.github_instance.get_cookies(uuid)
+        print(json.dumps(cookies, indent=2))
         for cookie in cookies:
             if cookie['name'] == 'manual_test_header':
                 self.assertEqual(cookie['value'], 'blahhh', cookie.get('value'))
