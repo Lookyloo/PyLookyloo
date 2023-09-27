@@ -347,6 +347,14 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('bin', capture_uuid, 'screenshot'))))
         return BytesIO(r.content)
 
+    def get_data(self, capture_uuid: str) -> BytesIO:
+        '''Returns the downloaded data.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(Path('bin', capture_uuid, 'data'))))
+        return BytesIO(r.content)
+
     def get_cookies(self, capture_uuid: str) -> List[Dict[str, str]]:
         '''Returns the complete cookies jar.
 

@@ -5,6 +5,8 @@ import json
 import unittest
 import time
 
+from zipfile import ZipFile
+
 import requests
 
 from pylookyloo import Lookyloo
@@ -104,6 +106,16 @@ class UnitTesting(unittest.TestCase):
                 self.assertEqual(cookie['value'], '40', cookie.get('value'))
             else:
                 raise Exception(cookie)
+
+    def test_js_download(self) -> None:
+        # uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/sneaky_download?version=foo')
+        uuid = self.github_instance.submit(url='http://127.0.0.1:5000/sneaky_download?version=foo',
+                                           user_agent="MyTestAgent",
+                                           quiet=True)
+        self._wait_capture_done(uuid)
+        data = self.github_instance.get_data(uuid)
+        with ZipFile(data) as z:
+            self.assertEqual(z.namelist()[0], 'TOS.pdf', z.namelist())
 
 
 if __name__ == '__main__':

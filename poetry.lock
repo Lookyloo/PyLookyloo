@@ -993,13 +993,13 @@ files = [
 
 [[package]]
 name = "traitlets"
-version = "5.10.0"
+version = "5.10.1"
 description = "Traitlets Python configuration system"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "traitlets-5.10.0-py3-none-any.whl", hash = "sha256:417745a96681fbb358e723d5346a547521f36e9bd0d50ba7ab368fff5d67aa54"},
-    {file = "traitlets-5.10.0.tar.gz", hash = "sha256:f584ea209240466e66e91f3c81aa7d004ba4cf794990b0c775938a1544217cd1"},
+    {file = "traitlets-5.10.1-py3-none-any.whl", hash = "sha256:07ab9c5bf8a0499fd7b088ba51be899c90ffc936ffc797d7b6907fc516bcd116"},
+    {file = "traitlets-5.10.1.tar.gz", hash = "sha256:db9c4aa58139c3ba850101913915c042bdba86f7c8a0dda1c6f7f92c5da8e542"},
 ]
 
 [package.extras]
@@ -1008,13 +1008,13 @@ test = ["argcomplete (>=3.0.3)", "mypy (>=1.5.1)", "pre-commit", "pytest (>=7.0,
 
 [[package]]
 name = "types-requests"
-version = "2.31.0.4"
+version = "2.31.0.6"
 description = "Typing stubs for requests"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "types-requests-2.31.0.4.tar.gz", hash = "sha256:a111041148d7e04bf100c476bc4db3ee6b0a1cd0b4018777f6a660b1c4f1318d"},
-    {file = "types_requests-2.31.0.4-py3-none-any.whl", hash = "sha256:c7a9d6b62776f21b169a94a0e9d2dfcae62fa9149f53594ff791c3ae67325490"},
+    {file = "types-requests-2.31.0.6.tar.gz", hash = "sha256:cd74ce3b53c461f1228a9b783929ac73a666658f223e28ed29753771477b3bd0"},
+    {file = "types_requests-2.31.0.6-py3-none-any.whl", hash = "sha256:a2db9cb228a81da8348b49ad6db3f5519452dd20a9c1e1a868c83c5fe88fd1a9"},
 ]
 
 [package.dependencies]
@@ -1091,4 +1091,4 @@ docs = ["Sphinx", "Sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "dbee7cada49f2410f2ab298993ae8c48a402d683bbe4c89cb65aee0dfdbd9ec5"
+content-hash = "5bd2925f674bc7065936fbcc4c76d1eb00f0e3293088332ce71908a9fcbc38b6"
