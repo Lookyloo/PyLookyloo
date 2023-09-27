@@ -108,8 +108,8 @@ class UnitTesting(unittest.TestCase):
                 raise Exception(cookie)
 
     def test_js_download(self) -> None:
-        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/sneaky_download?version=foo')
         # uuid = self.github_instance.submit(url='http://127.0.0.1:5000/sneaky_download?version=foo',
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/sneaky_download?version=foo',
                                            user_agent="MyTestAgent",
                                            quiet=True)
         self._wait_capture_done(uuid)
