@@ -43,7 +43,7 @@ class CaptureSettings(TypedDict, total=False):
     referer: Optional[str]
 
     listing: Optional[bool]
-    auto_report: Optional[Dict[str, str]]
+    auto_report: Optional[Union[bool, Dict[str, str]]]
 
 
 class CompareSettings(TypedDict, total=False):
@@ -143,7 +143,7 @@ class Lookyloo():
                viewport: Optional[Dict[str, int]]=None,
                referer: Optional[str]=None,
                listing: Optional[bool]=None,
-               auto_report: Optional[Dict[str, str]]=None
+               auto_report: Optional[Union[bool, Dict[str, str]]]=None
                ) -> str:
         ...
 
@@ -165,7 +165,7 @@ class Lookyloo():
                viewport: Optional[Dict[str, int]]=None,
                referer: Optional[str]=None,
                listing: Optional[bool]=None,
-               auto_report: Optional[Dict[str, str]]=None
+               auto_report: Optional[Union[bool, Dict[str, str]]]=None
                ) -> str:
         '''Submit a URL to a lookyloo instance.
 
@@ -192,7 +192,7 @@ class Lookyloo():
         :param referer: The referer URL for the capture
         :param listing: If False, the capture will be not be on the publicly accessible index page of lookyloo
         :param auto_report: If set, the capture will automatically be forwarded to an analyst (if the instance is configured this way)
-                            Dictionary with two keys:
+                            Pass True if you want to autoreport without any setting, or a dictionary with two keys:
                                 * email (required): the email of the submitter, so the analyst to get in touch
                                 * comment (optional): a comment about the capture to help the analyst
         '''
