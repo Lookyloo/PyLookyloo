@@ -1,10 +1,10 @@
 import argparse
 import json
 
-from .api import Lookyloo, CaptureSettings  # noqa
+from .api import Lookyloo, CaptureSettings, PyLookylooError, AuthError, CompareSettings  # noqa
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Enqueue a URL on Lookyloo.', epilog='The capture UUIDs you will receive can be used as permaurls (https://<domain>/tree/<uuid>).')
     parser.add_argument('--url', type=str, help='URL of the instance (defaults to https://lookyloo.circl.lu/, the public instance).')
     parser.add_argument('--query', help='URL to enqueue. The response is the permanent URL where you can see the result of the capture.')
@@ -35,3 +35,6 @@ def main():
             print(json.dumps(response))
     else:
         print(f'Unable to reach {lookyloo.root_url}. Is the server up?')
+
+
+__all__ = ['Lookyloo', 'CaptureSettings', 'PyLookylooError', 'AuthError', 'CompareSettings']

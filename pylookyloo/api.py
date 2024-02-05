@@ -109,7 +109,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'comparables'))))
         return r.json()
 
-    def enqueue(self, url: Optional[str]=None, quiet: bool=False,
+    def enqueue(self, url: Optional[str]=None, quiet: bool=False,  # type: ignore[no-untyped-def]
                 document: Optional[Union[Path, BytesIO]]=None,
                 document_name: Optional[str]=None, **kwargs) -> str:
         '''Enqueue an URL.
@@ -267,7 +267,7 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(Path('json', 'get_token'))), json=to_post)
         return r.json()
 
-    def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None):
+    def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None) -> None:
         '''Init the API key for the current session. All the requests against lookyloo after this call will be authenticated.'''
         if apikey:
             self.apikey = apikey
@@ -282,12 +282,12 @@ class Lookyloo():
         else:
             raise AuthError('Unable to initialize API key')
 
-    def misp_export(self, tree_uuid: str) -> Dict:
+    def misp_export(self, tree_uuid: str) -> Dict[str, Any]:
         '''Export the capture in MISP format'''
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_export'))))
         return r.json()
 
-    def misp_push(self, tree_uuid: str) -> Union[Dict, List]:
+    def misp_push(self, tree_uuid: str) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
         '''Push the capture to a pre-configured MISP instance (requires an authenticated user, use init_apikey first)
         Note: if the response is a dict, it is an error mesage. If it is a list, it's a list of MISP event.
         '''
@@ -296,7 +296,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(Path('json', tree_uuid, 'misp_push'))))
         return r.json()
 
-    def trigger_modules(self, tree_uuid: str, force: bool=False) -> Dict:
+    def trigger_modules(self, tree_uuid: str, force: bool=False) -> Dict[str, Any]:
         '''Trigger all the available 3rd party modules on the given capture.
         :param force: Trigger the modules even if they were already triggered today.
         '''
@@ -305,14 +305,14 @@ class Lookyloo():
                               json=to_send)
         return r.json()
 
-    def rebuild_capture(self, tree_uuid: str) -> Dict:
+    def rebuild_capture(self, tree_uuid: str) -> Dict[str, str]:
         '''Force rebuild a capture (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
         r = self.session.get(urljoin(self.root_url, str(Path('admin', tree_uuid, 'rebuild'))))
         return r.json()
 
-    def hide_capture(self, tree_uuid: str) -> Dict:
+    def hide_capture(self, tree_uuid: str) -> Dict[str, str]:
         '''Hide a capture from the index page (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
