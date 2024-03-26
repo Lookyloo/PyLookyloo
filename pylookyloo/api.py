@@ -453,3 +453,11 @@ class Lookyloo():
                                     'capture_right': capture_right,
                                     'compare_settings': compare_settings})
         return r.json()
+
+    def get_modules_responses(self, tree_uuid: str) -> Dict[str, Any]:
+        '''Returns information from the 3rd party modules
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'modules'))))
+        return r.json()
