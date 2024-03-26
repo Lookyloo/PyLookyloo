@@ -309,14 +309,14 @@ class Lookyloo():
         '''Force rebuild a capture (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'rebuild'))))
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'rebuild'))))
         return r.json()
 
     def hide_capture(self, tree_uuid: str) -> Dict[str, str]:
         '''Hide a capture from the index page (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'hide'))))
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'hide'))))
         return r.json()
 
     def get_redirects(self, capture_uuid: str) -> Dict[str, Any]:
@@ -452,4 +452,12 @@ class Lookyloo():
                               json={'capture_left': capture_left,
                                     'capture_right': capture_right,
                                     'compare_settings': compare_settings})
+        return r.json()
+
+    def get_modules_responses(self, tree_uuid: str) -> Dict[str, Any]:
+        '''Returns information from the 3rd party modules
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'modules'))))
         return r.json()
