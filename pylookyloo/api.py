@@ -461,9 +461,10 @@ class Lookyloo():
         '''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'modules'))))
         return r.json()
-    
-    def send_mail(self, tree_uuid: str, email: str = '', comment: str = None) -> True | dict[str, Any]:
-            to_send = {'email': email, 'comment': comment}
-            r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
-            return r.json()
-    
+
+    def send_mail(self, tree_uuid: str, email: str = '', comment: str | None = None) -> bool | dict[str, Any]:
+        to_send = {'email': email}
+        if comment:
+            to_send['comment'] = comment
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
+        return r.json()
