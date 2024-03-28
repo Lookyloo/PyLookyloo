@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
 import unittest
@@ -32,6 +31,8 @@ class UnitTesting(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         setattr(cls, "github_instance", Lookyloo('http://127.0.0.1:5100'))
+        # Check that the local instance is up
+        assert cls.github_instance.is_up
         requests.head('https://rafiot.eu.pythonanywhere.com/')
         time.sleep(10)
 
