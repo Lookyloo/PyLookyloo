@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 from __future__ import annotations
 
@@ -8,7 +7,7 @@ import warnings
 
 from importlib.metadata import version
 from io import BytesIO, StringIO
-from typing import Optional, Dict, Any, List, Union, TypedDict, overload
+from typing import Any, TypedDict, overload
 from urllib.parse import urljoin, urlparse
 from pathlib import PurePosixPath, Path
 
@@ -26,39 +25,39 @@ class AuthError(PyLookylooError):
 class CaptureSettings(TypedDict, total=False):
     '''The capture settings that can be passed to Lookyloo.'''
 
-    url: Optional[str]
-    document_name: Optional[str]
-    document: Optional[str]
-    browser: Optional[str]
-    device_name: Optional[str]
-    user_agent: Optional[str]
-    proxy: Optional[Union[str, Dict[str, str]]]
-    general_timeout_in_sec: Optional[int]
-    cookies: Optional[List[Dict[str, Any]]]
-    headers: Optional[Union[str, Dict[str, str]]]
-    http_credentials: Optional[Dict[str, int]]
-    geolocation: Optional[Dict[str, float]]
-    timezone_id: Optional[str]
-    locale: Optional[str]
-    color_scheme: Optional[str]
-    viewport: Optional[Dict[str, int]]
-    referer: Optional[str]
+    url: str | None
+    document_name: str | None
+    document: str | None
+    browser: str | None
+    device_name: str | None
+    user_agent: str | None
+    proxy: str | dict[str, str] | None
+    general_timeout_in_sec: int | None
+    cookies: list[dict[str, Any]] | None
+    headers: str | dict[str, str] | None
+    http_credentials: dict[str, int] | None
+    geolocation: dict[str, float] | None
+    timezone_id: str | None
+    locale: str | None
+    color_scheme: str | None
+    viewport: dict[str, int] | None
+    referer: str | None
 
-    listing: Optional[bool]
-    auto_report: Optional[Union[bool, Dict[str, str]]]
+    listing: bool | None
+    auto_report: bool | dict[str, str] | None
 
 
 class CompareSettings(TypedDict, total=False):
     '''The settings that can be passed to the compare method on lookyloo side to filter out some differences'''
 
-    ressources_ignore_domains: Optional[List[str]]
-    ressources_ignore_regexes: Optional[List[str]]
+    ressources_ignore_domains: list[str] | None
+    ressources_ignore_regexes: list[str] | None
 
 
 class Lookyloo():
 
-    def __init__(self, root_url: str='https://lookyloo.circl.lu/', useragent: Optional[str]=None,
-                 *, proxies: Optional[Dict[str, str]]=None):
+    def __init__(self, root_url: str='https://lookyloo.circl.lu/', useragent: str | None=None,
+                 *, proxies: dict[str, str] | None=None):
         '''Query a specific lookyloo instance.
 
         :param root_url: URL of the instance to query.
@@ -75,7 +74,7 @@ class Lookyloo():
         self.session.headers['user-agent'] = useragent if useragent else f'PyLookyloo / {version("pylookyloo")}'
         if proxies:
             self.session.proxies.update(proxies)
-        self.apikey: Optional[str] = None
+        self.apikey: str | None = None
 
     @property
     def is_up(self) -> bool:
@@ -86,7 +85,7 @@ class Lookyloo():
             return False
         return r.status_code == 200
 
-    def get_status(self, tree_uuid: str) -> Dict[str, Any]:
+    def get_status(self, tree_uuid: str) -> dict[str, Any]:
         '''Get the status of a capture:
             * -1: Unknown capture.
             * 0: The capture is queued up but not processed yet.
@@ -96,24 +95,24 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'status'))))
         return r.json()
 
-    def get_capture_stats(self, tree_uuid: str) -> Dict[str, Any]:
+    def get_capture_stats(self, tree_uuid: str) -> dict[str, Any]:
         '''Get statistics of the capture'''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'stats'))))
         return r.json()
 
-    def get_info(self, tree_uuid: str) -> Dict[str, Any]:
+    def get_info(self, tree_uuid: str) -> dict[str, Any]:
         '''Get information about the capture (url, timestamp, user agent)'''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'info'))))
         return r.json()
 
-    def get_comparables(self, tree_uuid: str) -> Dict[str, Any]:
+    def get_comparables(self, tree_uuid: str) -> dict[str, Any]:
         '''Get comparable information from the capture'''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'comparables'))))
         return r.json()
 
-    def enqueue(self, url: Optional[str]=None, quiet: bool=False,  # type: ignore[no-untyped-def]
-                document: Optional[Union[Path, BytesIO]]=None,
-                document_name: Optional[str]=None, **kwargs) -> str:
+    def enqueue(self, url: str | None=None, quiet: bool=False,  # type: ignore[no-untyped-def]
+                document: Path | BytesIO | None=None,
+                document_name: str | None=None, **kwargs) -> str:
         '''Enqueue an URL.
 
         :param url: URL to enqueue
@@ -128,50 +127,50 @@ class Lookyloo():
 
     @overload
     def submit(self, *, quiet: bool=False,
-               capture_settings: Optional[CaptureSettings]=None) -> str:
+               capture_settings: CaptureSettings | None=None) -> str:
         ...
 
     @overload
     def submit(self, *, quiet: bool=False,
-               url: Optional[str]=None,
-               document_name: Optional[str]=None, document: Optional[Union[Path, BytesIO]]=None,
-               browser: Optional[str]=None, device_name: Optional[str]=None,
-               user_agent: Optional[str]=None,
-               proxy: Optional[Union[str, Dict[str, str]]]=None,
-               general_timeout_in_sec: Optional[int]=None,
-               cookies: Optional[List[Dict[str, Any]]]=None,
-               headers: Optional[Union[str, Dict[str, str]]]=None,
-               http_credentials: Optional[Dict[str, int]]=None,
-               geolocation: Optional[Dict[str, float]]=None,
-               timezone_id: Optional[str]=None,
-               locale: Optional[str]=None,
-               color_scheme: Optional[str]=None,
-               viewport: Optional[Dict[str, int]]=None,
-               referer: Optional[str]=None,
-               listing: Optional[bool]=None,
-               auto_report: Optional[Union[bool, Dict[str, str]]]=None
+               url: str | None=None,
+               document_name: str | None=None, document: Path | BytesIO | None=None,
+               browser: str | None=None, device_name: str | None=None,
+               user_agent: str | None=None,
+               proxy: str | dict[str, str] | None=None,
+               general_timeout_in_sec: int | None=None,
+               cookies: list[dict[str, Any]] | None=None,
+               headers: str | dict[str, str] | None=None,
+               http_credentials: dict[str, int] | None=None,
+               geolocation: dict[str, float] | None=None,
+               timezone_id: str | None=None,
+               locale: str | None=None,
+               color_scheme: str | None=None,
+               viewport: dict[str, int] | None=None,
+               referer: str | None=None,
+               listing: bool | None=None,
+               auto_report: bool | dict[str, str] | None=None
                ) -> str:
         ...
 
     def submit(self, *, quiet: bool=False,
-               capture_settings: Optional[CaptureSettings]=None,
-               url: Optional[str]=None,
-               document_name: Optional[str]=None, document: Optional[Union[Path, BytesIO]]=None,
-               browser: Optional[str]=None, device_name: Optional[str]=None,
-               user_agent: Optional[str]=None,
-               proxy: Optional[Union[str, Dict[str, str]]]=None,
-               general_timeout_in_sec: Optional[int]=None,
-               cookies: Optional[List[Dict[str, Any]]]=None,
-               headers: Optional[Union[str, Dict[str, str]]]=None,
-               http_credentials: Optional[Dict[str, int]]=None,
-               geolocation: Optional[Dict[str, float]]=None,
-               timezone_id: Optional[str]=None,
-               locale: Optional[str]=None,
-               color_scheme: Optional[str]=None,
-               viewport: Optional[Dict[str, int]]=None,
-               referer: Optional[str]=None,
-               listing: Optional[bool]=None,
-               auto_report: Optional[Union[bool, Dict[str, str]]]=None
+               capture_settings: CaptureSettings | None=None,
+               url: str | None=None,
+               document_name: str | None=None, document: Path | BytesIO | None=None,
+               browser: str | None=None, device_name: str | None=None,
+               user_agent: str | None=None,
+               proxy: str | dict[str, str] | None=None,
+               general_timeout_in_sec: int | None=None,
+               cookies: list[dict[str, Any]] | None=None,
+               headers: str | dict[str, str] | None=None,
+               http_credentials: dict[str, int] | None=None,
+               geolocation: dict[str, float] | None=None,
+               timezone_id: str | None=None,
+               locale: str | None=None,
+               color_scheme: str | None=None,
+               viewport: dict[str, int] | None=None,
+               referer: str | None=None,
+               listing: bool | None=None,
+               auto_report: bool | dict[str, str] | None=None
                ) -> str:
         '''Submit a URL to a lookyloo instance.
 
@@ -263,13 +262,13 @@ class Lookyloo():
             return uuid
         return urljoin(self.root_url, f'tree/{uuid}')
 
-    def get_apikey(self, username: str, password: str) -> Dict[str, str]:
+    def get_apikey(self, username: str, password: str) -> dict[str, str]:
         '''Get the API key for the given user.'''
         to_post = {'username': username, 'password': password}
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'get_token'))), json=to_post)
         return r.json()
 
-    def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None) -> None:
+    def init_apikey(self, username: str | None=None, password: str | None=None, apikey: str | None=None) -> None:
         '''Init the API key for the current session. All the requests against lookyloo after this call will be authenticated.'''
         if apikey:
             self.apikey = apikey
@@ -284,12 +283,12 @@ class Lookyloo():
         else:
             raise AuthError('Unable to initialize API key')
 
-    def misp_export(self, tree_uuid: str) -> Dict[str, Any]:
+    def misp_export(self, tree_uuid: str) -> dict[str, Any]:
         '''Export the capture in MISP format'''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_export'))))
         return r.json()
 
-    def misp_push(self, tree_uuid: str) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+    def misp_push(self, tree_uuid: str) -> dict[str, Any] | list[dict[str, Any]]:
         '''Push the capture to a pre-configured MISP instance (requires an authenticated user, use init_apikey first)
         Note: if the response is a dict, it is an error mesage. If it is a list, it's a list of MISP event.
         '''
@@ -298,7 +297,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_push'))))
         return r.json()
 
-    def trigger_modules(self, tree_uuid: str, force: bool=False) -> Dict[str, Any]:
+    def trigger_modules(self, tree_uuid: str, force: bool=False) -> dict[str, Any]:
         '''Trigger all the available 3rd party modules on the given capture.
         :param force: Trigger the modules even if they were already triggered today.
         '''
@@ -307,21 +306,21 @@ class Lookyloo():
                               json=to_send)
         return r.json()
 
-    def rebuild_capture(self, tree_uuid: str) -> Dict[str, str]:
+    def rebuild_capture(self, tree_uuid: str) -> dict[str, str]:
         '''Force rebuild a capture (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'rebuild'))))
         return r.json()
 
-    def hide_capture(self, tree_uuid: str) -> Dict[str, str]:
+    def hide_capture(self, tree_uuid: str) -> dict[str, str]:
         '''Hide a capture from the index page (requires an authenticated user, use init_apikey first)'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'hide'))))
         return r.json()
 
-    def get_redirects(self, capture_uuid: str) -> Dict[str, Any]:
+    def get_redirects(self, capture_uuid: str) -> dict[str, Any]:
         '''Returns the initial redirects.
 
         :param capture_uuid: UUID of the capture
@@ -329,7 +328,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'redirects'))))
         return r.json()
 
-    def get_urls(self, capture_uuid: str) -> Dict[str, Any]:
+    def get_urls(self, capture_uuid: str) -> dict[str, Any]:
         '''Returns all the URLs seen during the capture.
 
         :param capture_uuid: UUID of the capture
@@ -337,7 +336,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'urls'))))
         return r.json()
 
-    def get_hostnames(self, capture_uuid: str) -> Dict[str, Any]:
+    def get_hostnames(self, capture_uuid: str) -> dict[str, Any]:
         '''Returns all the hostnames seen during the capture.
 
         :param capture_uuid: UUID of the capture
@@ -361,7 +360,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'data'))))
         return BytesIO(r.content)
 
-    def get_cookies(self, capture_uuid: str) -> List[Dict[str, str]]:
+    def get_cookies(self, capture_uuid: str) -> list[dict[str, str]]:
         '''Returns the complete cookies jar.
 
         :param capture_uuid: UUID of the capture
@@ -384,7 +383,7 @@ class Lookyloo():
         :param algorithm: The algorithm of the hashes
         :param hashes_only: If False, will also return the URLs related to the hashes
         '''
-        params: Dict[str, Union[str, int]] = {'algorithm': algorithm, 'hashes_only': int(hashes_only)}
+        params: dict[str, str | int] = {'algorithm': algorithm, 'hashes_only': int(hashes_only)}
 
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'hashes'))), params=params)
         return r.json()
@@ -397,7 +396,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'export'))))
         return BytesIO(r.content)
 
-    def get_hash_occurrences(self, h: str) -> Dict[str, Any]:
+    def get_hash_occurrences(self, h: str) -> dict[str, Any]:
         '''Returns the base 64 body related the the hash, and a list of all the captures containing that hash.
 
         :param h: sha512 to search
@@ -405,7 +404,7 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'hash_info', h))))
         return r.json()
 
-    def get_url_occurrences(self, url: str, limit: int=20, cached_captures_only: bool=True) -> Dict[str, Any]:
+    def get_url_occurrences(self, url: str, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
         '''Returns all the captures contining the URL
 
         :param url: URL to lookup
@@ -416,7 +415,7 @@ class Lookyloo():
                               json={'url': url, 'limit': limit})
         return r.json()
 
-    def get_hostname_occurrences(self, hostname: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> Dict[str, Any]:
+    def get_hostname_occurrences(self, hostname: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
         '''Returns all the captures contining the hostname. It will be pretty slow on very common domains.
 
         :param hostname: Hostname to lookup
@@ -428,13 +427,13 @@ class Lookyloo():
                               json={'hostname': hostname, 'with_urls_occurrences': with_urls_occurrences, 'limit': limit})
         return r.json()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         '''Returns all the captures contining the URL'''
 
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'stats'))))
         return r.json()
 
-    def get_takedown_information(self, capture_uuid: str) -> Dict[str, Any]:
+    def get_takedown_information(self, capture_uuid: str) -> dict[str, Any]:
         '''Returns information required to request a takedown for a capture
 
         :param capture_uuid: UUID of the capture
@@ -443,7 +442,7 @@ class Lookyloo():
                               json={'capture_uuid': capture_uuid})
         return r.json()
 
-    def compare_captures(self, capture_left: str, capture_right: str, /, *, compare_settings: Optional[CompareSettings]=None) -> Dict[str, Any]:
+    def compare_captures(self, capture_left: str, capture_right: str, /, *, compare_settings: CompareSettings | None=None) -> dict[str, Any]:
         '''Compares two captures
 
         :param capture_left: UUID of the capture to compare from
@@ -456,7 +455,7 @@ class Lookyloo():
                                     'compare_settings': compare_settings})
         return r.json()
 
-    def get_modules_responses(self, tree_uuid: str) -> Dict[str, Any]:
+    def get_modules_responses(self, tree_uuid: str) -> dict[str, Any]:
         '''Returns information from the 3rd party modules
 
         :param capture_uuid: UUID of the capture
