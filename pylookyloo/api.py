@@ -7,7 +7,7 @@ import warnings
 
 from importlib.metadata import version
 from io import BytesIO, StringIO
-from typing import Any, TypedDict, overload
+from typing import Any, TypedDict, overload, Literal
 from urllib.parse import urljoin, urlparse
 from pathlib import PurePosixPath, Path
 
@@ -433,13 +433,22 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'stats'))))
         return r.json()
 
-    def get_takedown_information(self, capture_uuid: str) -> dict[str, Any]:
+    @overload
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[True]) -> list[str]:
+        ...
+
+    @overload
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[False]=False) -> dict[str, Any]:
+        ...
+
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: bool=False) -> dict[str, Any] | list[str]:
         '''Returns information required to request a takedown for a capture
 
         :param capture_uuid: UUID of the capture
+        :param filter_contacts: If True, will only return the contact emails and filter out the invalid ones.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'takedown'))),
-                              json={'capture_uuid': capture_uuid})
+                              json={'capture_uuid': capture_uuid, 'filter': filter_contacts})
         return r.json()
 
     def compare_captures(self, capture_left: str, capture_right: str, /, *, compare_settings: CompareSettings | None=None) -> dict[str, Any]:
