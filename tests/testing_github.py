@@ -118,6 +118,18 @@ class UnitTesting(unittest.TestCase):
         with ZipFile(data) as z:
             self.assertEqual(z.namelist()[0], 'TOS.pdf', z.namelist())
 
+    def test_takedown_information(self) -> None:
+        expected_takedown_info = [{'hostname': 'www.circl.lu', 'contacts': ['support@eurodns.com'], 'ips': {'185.194.93.14': ['info@circl.lu'], '2a00:5980:93::14': ['info@circl.lu']}, 'asns': {'197869': ['info@circl.lu']}, 'all_emails': ['info@circl.lu', 'support@eurodns.com', 'nfo@circl.lu'], 'securitytxt': {'contact': 'info@circl.lu', 'encryption': 'https://openpgp.circl.lu/pks/lookup?op=get&search=0xeaadcffc22bd4cd5', 'policy': 'https://www.circl.lu/pub/responsible-vulnerability-disclosure/'}}]
+        expected_mails = ['info@circl.lu', 'support@eurodns.com', 'nfo@circl.lu']
+        uuid = self.github_instance.submit(url="https://www.circl.lu/", quiet=True)
+        self._wait_capture_done(uuid)
+        #get all takedown information
+        takedown_info = self.github_instance.get_takedown_information(capture_uuid=uuid)
+        self.assertEqual(expected_takedown_info, takedown_info)
+        #get only the filtered emails
+        filtered_mails = self.github_instance.get_takedown_information(capture_uuid=uuid, filter_contacts=True)
+        self.assertEqual(expected_mails, filtered_mails)
+
 
 if __name__ == '__main__':
     unittest.main()
