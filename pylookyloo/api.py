@@ -473,6 +473,12 @@ class Lookyloo():
         return r.json()
 
     def send_mail(self, tree_uuid: str, email: str = '', comment: str | None = None) -> bool | dict[str, Any]:
+        '''Reports a capture by sending an email to the investigation team
+
+        :param tree_uuid: UUID of the capture
+        :param email: Email of the reporter, used by the analyst to get in touch
+        :param comment: Description of the URL, will be given to the analyst
+        '''
         to_send = {'email': email}
         if comment:
             to_send['comment'] = comment
