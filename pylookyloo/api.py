@@ -438,10 +438,10 @@ class Lookyloo():
         ...
 
     @overload
-    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[False]=False) -> dict[str, Any]:
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[False]=False) -> list[dict[str, Any]]:
         ...
 
-    def get_takedown_information(self, capture_uuid: str, filter_contacts: bool=False) -> dict[str, Any] | list[str]:
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: bool=False) -> list[dict[str, Any]] | list[str]:
         '''Returns information required to request a takedown for a capture
 
         :param capture_uuid: UUID of the capture
