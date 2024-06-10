@@ -502,13 +502,13 @@ class Lookyloo():
         :param last_redirected_url:
         :param screenshot:
         '''
-        def encode_document(document: Path | BytesIO) -> str: # str | dict[str, Any]
+        def encode_document(document: Path | BytesIO) -> str | dict[str, Any]:
             if isinstance(document, Path):
                 with document.open('rb') as f:
                     document = BytesIO(f.read())
-            return base64.b64encode(document.getvalue()).decode() # what if something goes wrong here? (eg. file does not exist)
+            return base64.b64encode(document.getvalue()).decode()
         
-        to_send = {'listing': listing}
+        to_send: dict[str, Any] = {'listing': listing}
 
         if full_capture:
             b64_full_capture = encode_document(full_capture)
