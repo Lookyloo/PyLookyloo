@@ -484,3 +484,57 @@ class Lookyloo():
             to_send['comment'] = comment
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
         return r.json()
+
+    def upload_capture(self, *, quiet: bool = False,  # type: ignore[no-untyped-def]
+                        listing: bool = False,
+                        full_capture: Path | BytesIO | None = None,
+                        har: Path | BytesIO | None = None,
+                        html: Path | BytesIO | None = None,
+                        last_redirected_url: str | None = None,
+                        screenshot: Path | BytesIO | None = None) -> str:
+        '''Upload a capture via har-file and others
+
+        :param quiet: Returns the UUID only, instead of the whole URL
+        :param listing: if true the capture should be public, else private
+        :param full_capture: path to the capture made by another instance
+        :param har: Harfile
+        :param html: rendered HTML
+        :param last_redirected_url:
+        :param screenshot:
+        '''
+        def encode_document(document: Path | BytesIO) -> str: # str | dict[str, Any]
+            if isinstance(document, Path):
+                with document.open('rb') as f:
+                    document = BytesIO(f.read())
+            return base64.b64encode(document.getvalue()).decode() # what if something goes wrong here? (eg. file does not exist)
+        
+        to_send = {'listing': listing}
+
+        if full_capture:
+            b64_full_capture = encode_document(full_capture)
+            to_send['full_capture'] = b64_full_capture
+        elif har:
+            b64_har = encode_document(har)
+            to_send['har_file'] = b64_har
+                
+            if html:
+                b64_html = encode_document(html)
+                to_send['html_file'] = b64_html
+            
+            if last_redirected_url:
+                to_send['landing_page'] = last_redirected_url
+            
+            if screenshot:
+                b64_screenshot = encode_document(screenshot)
+                to_send['screenshot_file'] = b64_screenshot  
+        else:             
+            raise PyLookylooError("Full capture or at least har-file are required")
+
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'upload'))), json=to_send)
+        uuid = r.json()
+
+        if not uuid:
+            raise PyLookylooError('Unable to get UUID from lookyloo instance.') 
+        if quiet:
+            return uuid
+        return urljoin(self.root_url, f'tree/{uuid}')
