@@ -485,13 +485,13 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
         return r.json()
 
-    def upload_capture(self, *, quiet: bool = False,  # type: ignore[no-untyped-def]
+    def upload_capture(self, *, quiet: bool = False,
                         listing: bool = False,
                         full_capture: Path | BytesIO | None = None,
                         har: Path | BytesIO | None = None,
                         html: Path | BytesIO | None = None,
                         last_redirected_url: str | None = None,
-                        screenshot: Path | BytesIO | None = None) -> str:
+                        screenshot: Path | BytesIO | None = None) -> str | dict[str, Any]:
         '''Upload a capture via har-file and others
 
         :param quiet: Returns the UUID only, instead of the whole URL
@@ -502,7 +502,7 @@ class Lookyloo():
         :param last_redirected_url:
         :param screenshot:
         '''
-        def encode_document(document: Path | BytesIO) -> str | dict[str, Any]:
+        def encode_document(document: Path | BytesIO) -> str:
             if isinstance(document, Path):
                 with document.open('rb') as f:
                     document = BytesIO(f.read())
