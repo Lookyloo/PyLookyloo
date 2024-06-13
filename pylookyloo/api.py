@@ -486,6 +486,26 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
         return r.json()
 
+    @overload
+    def upload_capture(self, *, quiet: Literal[True],
+                       listing: bool = False,
+                       full_capture: Path | BytesIO | str | None = None,
+                       har: Path | BytesIO | str | None = None,
+                       html: Path | BytesIO | str | None = None,
+                       last_redirected_url: str | None = None,
+                       screenshot: Path | BytesIO | str | None = None) -> str:
+        ...
+
+    @overload
+    def upload_capture(self, *, quiet: Literal[False]=False,
+                       listing: bool = False,
+                       full_capture: Path | BytesIO | str | None = None,
+                       har: Path | BytesIO | str | None = None,
+                       html: Path | BytesIO | str | None = None,
+                       last_redirected_url: str | None = None,
+                       screenshot: Path | BytesIO | str | None = None) -> tuple[str, dict[str, str]]:
+        ...
+
     def upload_capture(self, *, quiet: bool = False,
                        listing: bool = False,
                        full_capture: Path | BytesIO | str | None = None,
