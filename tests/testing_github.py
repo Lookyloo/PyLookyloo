@@ -46,9 +46,16 @@ class UnitTesting(unittest.TestCase):
         uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/redirect_http', quiet=True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_redirects(uuid)
-        print(response)
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/redirect_http', response['response']['url'])
         self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][1])
+
+        # test export - import
+        capture_export = self.github_instance.get_complete_capture(uuid)
+        new_uuid, messages = self.github_instance.upload_capture(full_capture=capture_export, quiet=False)
+        self.assertNotEqual(uuid, new_uuid)
+        self.assertFalse(messages['errors'])
+        self.assertEqual(len(messages['warnings']), 1)
+        self.assertEqual(messages['warnings'][0], f'UUID {uuid} already exists, set a new one.')
 
     def test_referer(self) -> None:
         uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True)
@@ -123,10 +130,10 @@ class UnitTesting(unittest.TestCase):
         expected_mails = ['info@circl.lu', 'support@eurodns.com', 'nfo@circl.lu']
         uuid = self.github_instance.submit(url="https://www.circl.lu/", quiet=True)
         self._wait_capture_done(uuid)
-        #get all takedown information
+        # get all takedown information
         takedown_info = self.github_instance.get_takedown_information(capture_uuid=uuid)
         self.assertEqual(set(expected_takedown_info[0]), set(takedown_info[0]))
-        #get only the filtered emails
+        # get only the filtered emails
         filtered_mails = self.github_instance.get_takedown_information(capture_uuid=uuid, filter_contacts=True)
         self.assertEqual(set(expected_mails), set(filtered_mails))
 
