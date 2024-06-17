@@ -284,6 +284,14 @@ class Lookyloo():
         else:
             raise AuthError('Unable to initialize API key')
 
+    def get_user_config(self) -> dict[str, Any] | None:
+        '''Get the configuration enforced by the server for the current user (requires an authenticated user, use init_apikey first)
+        '''
+        if not self.apikey:
+            raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'get_user_config'))))
+        return r.json()
+
     def misp_export(self, tree_uuid: str) -> dict[str, Any]:
         '''Export the capture in MISP format'''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_export'))))
