@@ -30,6 +30,7 @@ class UnitTesting(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        # setattr(cls, "github_instance", Lookyloo('https://lookyloo.circl.lu'))
         setattr(cls, "github_instance", Lookyloo('http://127.0.0.1:5100'))
         # Check that the local instance is up
         assert cls.github_instance.is_up
@@ -78,8 +79,8 @@ class UnitTesting(unittest.TestCase):
         self.assertEqual(200, response['final_status_code'])
 
     def test_capture_settings(self) -> None:
-        # uuid = self.github_instance.submit(url='http://127.0.0.1:5000/all_settings',
         uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/all_settings',
+        # uuid = self.github_instance.submit(url='http://192.168.1.65:5000/all_settings',
                                            user_agent="MyTestAgent",
                                            headers={'Manual-Test': "blahhh", "DNT": "1"},
                                            geolocation={'latitude': 50, 'longitude': 40},
@@ -87,6 +88,10 @@ class UnitTesting(unittest.TestCase):
                                            locale='en_US',
                                            color_scheme="dark",
                                            referer="https://circl.lu",
+                                           cookies=[{'manual_test_cookie': 'manual test value'},
+                                                    {'name': 'other_manual_test_cookie',
+                                                     'value': 'other manual test value',
+                                                     }],
                                            quiet=True)
         self._wait_capture_done(uuid)
         cookies = self.github_instance.get_cookies(uuid)
@@ -112,6 +117,10 @@ class UnitTesting(unittest.TestCase):
                 self.assertEqual(cookie['value'], '50', cookie.get('value'))
             elif cookie['name'] == 'longitude':
                 self.assertEqual(cookie['value'], '40', cookie.get('value'))
+            elif cookie['name'] == 'manual_test_cookie':
+                self.assertEqual(cookie['value'], 'manual test value', cookie.get('value'))
+            elif cookie['name'] == 'other_manual_test_cookie':
+                self.assertEqual(cookie['value'], 'other manual test value', cookie.get('value'))
             else:
                 raise Exception(cookie)
 
