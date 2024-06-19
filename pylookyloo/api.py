@@ -494,10 +494,12 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
         return r.json()
 
-    def get_recent_captures(self) -> list:
+    def get_recent_captures(self, timestamp:str) -> list:
         '''Gets the uuids of the most recent captures
+
+        :param timestamp: Timestamp of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json/recent_captures'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json/recent_captures/', timestamp))))
         return r.json()
 
     @overload
