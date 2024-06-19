@@ -6,6 +6,7 @@ import os
 import base64
 import warnings
 
+from datetime import datetime
 from importlib.metadata import version
 from io import BytesIO, StringIO
 from typing import Any, TypedDict, overload, Literal
@@ -494,12 +495,18 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
         return r.json()
 
-    def get_recent_captures(self, timestamp:str) -> list[str]:
+    def get_recent_captures(self, timestamp: str | datetime | float | None=None) -> list[str]:
         '''Gets the uuids of the most recent captures
 
         :param timestamp: Timestamp of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json/recent_captures/', timestamp))))
+        if not timestamp:
+            url = urljoin(self.root_url, str(PurePosixPath('json', 'recent_captures')))
+        else:
+            if isinstance(timestamp, datetime):
+                timestamp = timestamp.timestamp()
+            url = urljoin(self.root_url, str(PurePosixPath('json', 'recent_captures', str(timestamp))))
+        r = self.session.get(url)
         return r.json()
 
     @overload

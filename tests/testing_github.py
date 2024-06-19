@@ -4,6 +4,7 @@ import json
 import unittest
 import time
 
+from datetime import datetime
 from zipfile import ZipFile
 
 import requests
@@ -43,12 +44,19 @@ class UnitTesting(unittest.TestCase):
 
     # Check that a capture is properly made
     def test_capture(self) -> None:
+        oldest_capture_time = datetime.now()
+        time.sleep(1)
         # Query a url for capture; save uuid of the capture in a variable
         uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/redirect_http', quiet=True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_redirects(uuid)
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/redirect_http', response['response']['url'])
         self.assertEqual('https://www.youtube.com/watch?v=iwGFalTRHDA', response['response']['redirects'][1])
+
+        # test get recent captures
+        recent_captures = self.github_instance.get_recent_captures(oldest_capture_time)
+        self.assertEqual(len(recent_captures), 1)
+        self.assertEqual(recent_captures[0], uuid)
 
         # test export - import
         capture_export = self.github_instance.get_complete_capture(uuid)
@@ -79,8 +87,8 @@ class UnitTesting(unittest.TestCase):
         self.assertEqual(200, response['final_status_code'])
 
     def test_capture_settings(self) -> None:
-        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/all_settings',
         # uuid = self.github_instance.submit(url='http://192.168.1.65:5000/all_settings',
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/all_settings',
                                            user_agent="MyTestAgent",
                                            headers={'Manual-Test': "blahhh", "DNT": "1"},
                                            geolocation={'latitude': 50, 'longitude': 40},
