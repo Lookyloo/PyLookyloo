@@ -509,6 +509,18 @@ class Lookyloo():
         r = self.session.get(url)
         return r.json()
 
+    def get_categories_captures(self, category: str | None=None) -> list[str] | dict[str, list[str]] | None:
+        '''Get uuids for a specific category or all categorized uuids if category is None
+
+        :param category: The category according to which the uuids are to be returned
+        '''
+        if not category:
+            url = urljoin(self.root_url, str(PurePosixPath('json', 'categories')))
+        else:
+            url = urljoin(self.root_url, str(PurePosixPath('json', 'categories', category)))
+        r = self.session.get(url)
+        return r.json()
+
     @overload
     def upload_capture(self, *, quiet: Literal[True],
                        listing: bool = False,
