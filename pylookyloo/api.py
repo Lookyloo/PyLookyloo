@@ -498,14 +498,14 @@ class Lookyloo():
     def get_recent_captures(self, timestamp: str | datetime | float | None=None) -> list[str]:
         '''Gets the uuids of the most recent captures
 
-        :param timestamp: Timestamp of the capture
+        :param timestamp: Oldest timestamp to consider
         '''
-        if not timestamp:
-            url = urljoin(self.root_url, str(PurePosixPath('json', 'recent_captures')))
-        else:
+        if timestamp:
             if isinstance(timestamp, datetime):
                 timestamp = timestamp.timestamp()
             url = urljoin(self.root_url, str(PurePosixPath('json', 'recent_captures', str(timestamp))))
+        else:
+            url = urljoin(self.root_url, str(PurePosixPath('json', 'recent_captures')))
         r = self.session.get(url)
         return r.json()
 
@@ -514,10 +514,10 @@ class Lookyloo():
 
         :param category: The category according to which the uuids are to be returned
         '''
-        if not category:
-            url = urljoin(self.root_url, str(PurePosixPath('json', 'categories')))
-        else:
+        if category:
             url = urljoin(self.root_url, str(PurePosixPath('json', 'categories', category)))
+        else:
+            url = urljoin(self.root_url, str(PurePosixPath('json', 'categories')))
         r = self.session.get(url)
         return r.json()
 
