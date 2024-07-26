@@ -330,6 +330,13 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'hide'))))
         return r.json()
 
+    def remove_capture(self, tree_uuid: str) -> dict[str, str]:
+        '''Remove a capture, it will be impossible to get it by UUID (requires an authenticated user, use init_apikey first)'''
+        if not self.apikey:
+            raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'remove'))))
+        return r.json()
+
     def get_redirects(self, capture_uuid: str) -> dict[str, Any]:
         '''Returns the initial redirects.
 
