@@ -63,7 +63,7 @@ class UnitTesting(unittest.TestCase):
         new_uuid, messages = self.github_instance.upload_capture(full_capture=capture_export, quiet=False)
         self.assertNotEqual(uuid, new_uuid)
         self.assertFalse(messages['errors'])
-        self.assertEqual(len(messages['warnings']), 1)
+        self.assertEqual(len(messages['warnings']), 1, messages['warnings'])
         self.assertEqual(messages['warnings'][0], f'UUID {uuid} already exists, set a new one.')
 
     def test_referer(self) -> None:
