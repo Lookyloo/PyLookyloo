@@ -42,6 +42,7 @@ class CaptureSettings(TypedDict, total=False):
     timezone_id: str | None
     locale: str | None
     color_scheme: str | None
+    java_script_enabled: bool
     viewport: dict[str, int] | None
     referer: str | None
 
@@ -147,6 +148,7 @@ class Lookyloo():
                timezone_id: str | None=None,
                locale: str | None=None,
                color_scheme: str | None=None,
+               java_script_enabled: bool=True,
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
                listing: bool | None=None,
@@ -169,6 +171,7 @@ class Lookyloo():
                timezone_id: str | None=None,
                locale: str | None=None,
                color_scheme: str | None=None,
+               java_script_enabled: bool | None=None,
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
                listing: bool | None=None,
@@ -195,6 +198,7 @@ class Lookyloo():
         :param timezone_id: The timezone, warning, it m ust be a valid timezone (continent/city)
         :param locale: The locale of the browser
         :param color_scheme: The prefered color scheme of the browser (light or dark)
+        :param java_script_enabled: If False, no JS will run during the capture.
         :param viewport: The viewport of the browser used for capturing
         :param referer: The referer URL for the capture
         :param listing: If False, the capture will be not be on the publicly accessible index page of lookyloo
@@ -246,6 +250,8 @@ class Lookyloo():
                 to_send['locale'] = locale
             if color_scheme:
                 to_send['color_scheme'] = color_scheme
+            if java_script_enabled is not None:
+                to_send['java_script_enabled'] = java_script_enabled
             if viewport:
                 to_send['viewport'] = viewport
             if referer:
