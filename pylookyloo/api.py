@@ -15,6 +15,9 @@ from pathlib import PurePosixPath, Path
 
 import requests
 
+from urllib3.util import Retry
+from requests.adapters import HTTPAdapter
+
 
 class PyLookylooError(Exception):
     pass
@@ -68,6 +71,7 @@ class Lookyloo():
         :param proxies: The proxies to use to connect to lookyloo (not the ones given to the capture itself) - More details: https://requests.readthedocs.io/en/latest/user/advanced/#proxies
         '''
         self.root_url = root_url
+        self.apikey: str | None = None
 
         if not urlparse(self.root_url).scheme:
             self.root_url = 'http://' + self.root_url
@@ -77,7 +81,8 @@ class Lookyloo():
         self.session.headers['user-agent'] = useragent if useragent else f'PyLookyloo / {version("pylookyloo")}'
         if proxies:
             self.session.proxies.update(proxies)
-        self.apikey: str | None = None
+        retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+        self.session.mount('http://', HTTPAdapter(max_retries=retries))
 
     @property
     def is_up(self) -> bool:
