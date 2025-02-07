@@ -46,6 +46,7 @@ class CaptureSettings(TypedDict, total=False):
     locale: str | None
     color_scheme: str | None
     java_script_enabled: bool
+    headless: bool
     viewport: dict[str, int] | None
     referer: str | None
 
@@ -154,6 +155,7 @@ class Lookyloo():
                locale: str | None=None,
                color_scheme: str | None=None,
                java_script_enabled: bool=True,
+               headless: bool=True,
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
                listing: bool | None=None,
@@ -177,6 +179,7 @@ class Lookyloo():
                locale: str | None=None,
                color_scheme: str | None=None,
                java_script_enabled: bool | None=None,
+               headless: bool=True,
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
                listing: bool | None=None,
@@ -204,6 +207,7 @@ class Lookyloo():
         :param locale: The locale of the browser
         :param color_scheme: The prefered color scheme of the browser (light or dark)
         :param java_script_enabled: If False, no JS will run during the capture.
+        :param headless: If False, the browser will be headed, it requires the capture to be done on a desktop.
         :param viewport: The viewport of the browser used for capturing
         :param referer: The referer URL for the capture
         :param listing: If False, the capture will be not be on the publicly accessible index page of lookyloo
@@ -257,6 +261,8 @@ class Lookyloo():
                 to_send['color_scheme'] = color_scheme
             if java_script_enabled is not None:
                 to_send['java_script_enabled'] = java_script_enabled
+            if headless is not None:
+                to_send['headless'] = headless
             if viewport:
                 to_send['viewport'] = viewport
             if referer:
@@ -537,6 +543,14 @@ class Lookyloo():
         else:
             url = urljoin(self.root_url, str(PurePosixPath('json', 'categories')))
         r = self.session.get(url)
+        return r.json()
+
+    def push_from_lacus(self, capture: dict[str, Any]) -> dict[str, Any]:
+        '''Push a capture from Lacus to Lookyloo
+
+        :param capture: The capture to push from Lacus
+        '''
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'upload'))), json=capture)
         return r.json()
 
     @overload

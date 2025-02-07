@@ -36,11 +36,11 @@ classifiers = [
 lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
-
 docs = ["Sphinx (>=8.1.3) ; python_version >= \"3.10\""]
+examples = ["pylacus (>=1.12.1)"]
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.14.1"
+mypy = "^1.15.0"
 types-requests = "^2.32.0.20241016"
 pytest = "^8.3.4"
 
