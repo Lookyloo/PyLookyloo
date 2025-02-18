@@ -23,7 +23,7 @@ from requests.status_codes import codes
 
 class SafeRedirectRePOSTSession(Session):
 
-    def rebuild_method(self, prepared_request, response):
+    def rebuild_method(self, prepared_request: requests.PreparedRequest, response: requests.Response) -> None:
         # This method will resubmit a POST when we have a http -> https redirect
         if response.status_code == codes.moved and prepared_request.method == 'POST':
             # make sure it is just a redirect http->https and we're not going to a different host
