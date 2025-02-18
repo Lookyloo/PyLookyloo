@@ -17,6 +17,29 @@ import requests
 
 from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
+from requests.sessions import Session
+from requests.status_codes import codes
+
+
+class SafeRedirectRePOSTSession(Session):
+
+    def rebuild_method(self, prepared_request, response):
+        # This method will resubmit a POST when we have a http -> https redirect
+        if response.status_code == codes.moved and prepared_request.method == 'POST':
+            # make sure it is just a redirect http->https and we're not going to a different host
+            prec_url = urlparse(response.url)
+            next_url = urlparse(prepared_request.url)
+
+            if (prec_url.netloc != next_url.netloc or prec_url.scheme != 'http'
+                    or next_url.scheme != 'https'):
+                super().rebuild_method(prepared_request, response)
+            else:
+                # For surely good reasons, requests force-remove the body of the redirected requests unless the statuscode is either 307 or 308
+                # https://github.com/psf/requests/issues/1084
+                # Doing that makes sure we keep it
+                response.status_code = 307
+        else:
+            super().rebuild_method(prepared_request, response)
 
 
 class PyLookylooError(Exception):
@@ -78,7 +101,7 @@ class Lookyloo():
             self.root_url = 'http://' + self.root_url
         if not self.root_url.endswith('/'):
             self.root_url += '/'
-        self.session = requests.session()
+        self.session = SafeRedirectRePOSTSession()
         self.session.headers['user-agent'] = useragent if useragent else f'PyLookyloo / {version("pylookyloo")}'
         if proxies:
             self.session.proxies.update(proxies)
