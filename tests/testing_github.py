@@ -149,7 +149,8 @@ class UnitTesting(unittest.TestCase):
         self._wait_capture_done(uuid)
         # get all takedown information
         takedown_info = self.github_instance.get_takedown_information(capture_uuid=uuid)
-        self.assertEqual(set(expected_takedown_info[0]), set(takedown_info[0]))
+        print(takedown_info)
+        self.assertEqual(set(expected_takedown_info[0]), set(takedown_info[0]), takedown_info)
         # get only the filtered emails
         filtered_mails = self.github_instance.get_takedown_information(capture_uuid=uuid, filter_contacts=True)
         self.assertEqual(set(expected_mails), set(filtered_mails))
