@@ -62,6 +62,7 @@ class CaptureSettings(TypedDict, total=False):
     proxy: str | dict[str, str] | None
     general_timeout_in_sec: int | None
     cookies: list[dict[str, Any]] | None
+    storage: str | dict[str, Any] | None
     headers: str | dict[str, str] | None
     http_credentials: dict[str, int] | None
     geolocation: dict[str, float] | None
@@ -171,6 +172,7 @@ class Lookyloo():
                proxy: str | dict[str, str] | None=None,
                general_timeout_in_sec: int | None=None,
                cookies: list[dict[str, Any]] | None=None,
+               storage: str | dict[str, Any] | None=None,
                headers: str | dict[str, str] | None=None,
                http_credentials: dict[str, int] | None=None,
                geolocation: dict[str, float] | None=None,
@@ -195,6 +197,7 @@ class Lookyloo():
                proxy: str | dict[str, str] | None=None,
                general_timeout_in_sec: int | None=None,
                cookies: list[dict[str, Any]] | None=None,
+               storage: str | dict[str, Any] | None=None,
                headers: str | dict[str, str] | None=None,
                http_credentials: dict[str, int] | None=None,
                geolocation: dict[str, float] | None=None,
@@ -270,6 +273,8 @@ class Lookyloo():
                 to_send['general_timeout_in_sec'] = general_timeout_in_sec
             if cookies:
                 to_send['cookies'] = cookies
+            if storage:
+                to_send['storage'] = storage
             if headers:
                 to_send['headers'] = headers
             if http_credentials:
@@ -423,6 +428,14 @@ class Lookyloo():
         :param capture_uuid: UUID of the capture
         '''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'cookies'))))
+        return r.json()
+
+    def get_storage(self, capture_uuid: str) -> dict[str, Any]:
+        '''Returns the complete storage state.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'storage'))))
         return r.json()
 
     def get_html(self, capture_uuid: str) -> StringIO:
