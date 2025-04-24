@@ -128,6 +128,11 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'status'))))
         return r.json()
 
+    def get_remote_lacuses(self) -> list[dict[str, Any]]:
+        '''Get the list of Lacus instances configured on the Lookyloo instance'''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'remote_lacuses'))))
+        return r.json()
+
     def get_capture_stats(self, tree_uuid: str) -> dict[str, Any]:
         '''Get statistics of the capture'''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'stats'))))
