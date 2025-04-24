@@ -60,6 +60,7 @@ class CaptureSettings(TypedDict, total=False):
     device_name: str | None
     user_agent: str | None
     proxy: str | dict[str, str] | None
+    remote_lacus_name: str | None
     general_timeout_in_sec: int | None
     cookies: list[dict[str, Any]] | None
     storage: str | dict[str, Any] | None
@@ -175,6 +176,7 @@ class Lookyloo():
                browser: str | None=None, device_name: str | None=None,
                user_agent: str | None=None,
                proxy: str | dict[str, str] | None=None,
+               remote_lacus_name: str | None=None,
                general_timeout_in_sec: int | None=None,
                cookies: list[dict[str, Any]] | None=None,
                storage: str | dict[str, Any] | None=None,
@@ -200,6 +202,7 @@ class Lookyloo():
                browser: str | None=None, device_name: str | None=None,
                user_agent: str | None=None,
                proxy: str | dict[str, str] | None=None,
+               remote_lacus_name: str | None=None,
                general_timeout_in_sec: int | None=None,
                cookies: list[dict[str, Any]] | None=None,
                storage: str | dict[str, Any] | None=None,
@@ -228,7 +231,8 @@ class Lookyloo():
         :param browser: The browser to use for the capture, must be something Playwright knows
         :param device_name: The name of the device, must be something Playwright knows
         :param user_agent: The user agent the browser will use for the capture
-        :param proxy: SOCKS5 proxy to use for capturing
+        :param proxy: Capture via a proxy. It can either be the full URL to a SOCKS5 proxy, or the name of a specific proxy configured on a remote lacus instance.
+        :param remote_lacus_name: The name of the remote Lacus instance to use for the capture (only if lookyloo is configured this way)
         :param general_timeout_in_sec: The capture will raise a timeout it it takes more than that time
         :param cookies: A list of cookies
         :param headers: The headers to pass to the capture
