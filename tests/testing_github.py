@@ -140,7 +140,12 @@ class UnitTesting(unittest.TestCase):
         self._wait_capture_done(uuid)
         data = self.github_instance.get_data(uuid)
         with ZipFile(data) as z:
-            self.assertEqual(z.namelist()[0], 'TOS.pdf', z.namelist())
+            if z.namelist()[0].endswith('_multiple_downloads.zip'):
+                # got multiple downloads of the same file
+                with ZipFile(z.open(z.namelist()[0])) as z2:
+                    self.assertTrue(all(name.endswith('TOS.pdf') for name in z2.namelist()), z2.namelist())
+            else:
+                self.assertEqual(z.namelist()[0], 'TOS.pdf', z.namelist())
 
     def test_takedown_information(self) -> None:
         expected_takedown_info = [{'hostname': 'www.circl.lu', 'contacts': ['support@eurodns.com'], 'ips': {'185.194.93.14': ['info@circl.lu'], '2a00:5980:93::14': ['info@circl.lu']}, 'asns': {'197869': ['info@circl.lu']}, 'all_emails': ['info@circl.lu', 'support@eurodns.com', 'nfo@circl.lu'], 'securitytxt': {'contact': 'info@circl.lu', 'encryption': 'https://openpgp.circl.lu/pks/lookup?op=get&search=0xeaadcffc22bd4cd5', 'policy': 'https://www.circl.lu/pub/responsible-vulnerability-disclosure/'}}]
