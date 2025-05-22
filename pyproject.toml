@@ -1,6 +1,6 @@
 [project]
 name = "pylookyloo"
-version = "1.29.0"
+version = "1.30.0"
 description = "Python CLI and module for Lookyloo"
 authors = [
     {name="Raphaël Vinot", email="raphael.vinot@circl.lu"}
@@ -37,11 +37,11 @@ lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
 docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
-examples = ["pylacus (>=1.14.0)"]
+examples = ["pylacus (>=1.15.0)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.15.0"
-types-requests = "^2.32.0.20250328"
+types-requests = "^2.32.0.20250515"
 pytest = "^8.3.5"
 
 [build-system]
