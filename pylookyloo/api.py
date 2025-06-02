@@ -476,26 +476,29 @@ class Lookyloo():
         return BytesIO(r.content)
 
     def get_hash_occurrences(self, h: str) -> dict[str, Any]:
-        '''Returns the base 64 body related the the hash, and a list of all the captures containing that hash.
+        '''Returns the base64 body related the the hash, and a list of all the captures containing that hash.
 
         :param h: sha512 to search
         '''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'hash_info', h))))
         return r.json()
 
-    def get_url_occurrences(self, url: str, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
+    def get_url_occurrences(self, url: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
         '''Returns all the captures contining the URL
 
         :param url: URL to lookup
+        :param with_urls_occurrences: If true, add details about the URLs from the URL nodes in the tree.
         :param limit: The max amount of entries to return.
         :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'url_info'))),
-                              json={'url': url, 'limit': limit})
+                              json={'url': url, 'with_urls_occurrences': with_urls_occurrences,
+                                    'cached_captures_only': cached_captures_only,
+                                    'limit': limit})
         return r.json()
 
     def get_hostname_occurrences(self, hostname: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
-        '''Returns all the captures contining the hostname. It will be pretty slow on very common domains.
+        '''Returns all the captures contining the hostname.
 
         :param hostname: Hostname to lookup
         :param with_urls_occurrences: If true, add details about the related URLs.
@@ -503,7 +506,34 @@ class Lookyloo():
         :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'hostname_info'))),
-                              json={'hostname': hostname, 'with_urls_occurrences': with_urls_occurrences, 'limit': limit})
+                              json={'hostname': hostname, 'with_urls_occurrences': with_urls_occurrences,
+                                    'cached_captures_only': cached_captures_only,
+                                    'limit': limit})
+        return r.json()
+
+    def get_ip_occurrences(self, ip: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
+        '''Returns all the captures containing the IP address.
+
+        :param ip: IP to lookup
+        :param with_urls_occurrences: If true, add details about the related URLs.
+        :param limit: The max amount of entries to return.
+        :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
+        '''
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'ip_info'))),
+                              json={'ip': ip, 'with_urls_occurrences': with_urls_occurrences,
+                                    'cached_captures_only': cached_captures_only,
+                                    'limit': limit})
+        return r.json()
+
+    def get_favicon_occurrences(self, favicon: str | BytesIO, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
+        '''Returns all the captures containing the favicon.
+
+        :param favicon: Favicon to lookup. Either the hash, or the file in a BytesIO (hash will be generated on the fly)
+        :param limit: The max amount of entries to return.
+        :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
+        '''
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'favicon_info'))),
+                              json={'favicon': favicon, 'limit': limit, 'cached_captures_only': cached_captures_only})
         return r.json()
 
     def get_stats(self) -> dict[str, Any]:
