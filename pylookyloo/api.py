@@ -7,6 +7,7 @@ import base64
 import warnings
 
 from datetime import datetime
+from hashlib import sha512
 from importlib.metadata import version
 from io import BytesIO, StringIO
 from typing import Any, TypedDict, overload, Literal
@@ -532,6 +533,8 @@ class Lookyloo():
         :param limit: The max amount of entries to return.
         :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
         '''
+        if isinstance(favicon, BytesIO):
+            favicon = sha512(favicon.read()).hexdigest()
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'favicon_info'))),
                               json={'favicon': favicon, 'limit': limit, 'cached_captures_only': cached_captures_only})
         return r.json()
