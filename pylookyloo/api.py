@@ -392,6 +392,14 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'remove'))))
         return r.json()
 
+    def get_favicons(self, capture_uuid: str) -> dict[str, Any]:
+        '''Returns the potential favicons of the capture.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'favicons'))))
+        return r.json()
+
     def get_redirects(self, capture_uuid: str) -> dict[str, Any]:
         '''Returns the initial redirects.
 
