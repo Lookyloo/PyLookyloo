@@ -494,7 +494,7 @@ class Lookyloo():
         :param offset: The offset to start from, useful for pagination.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'hash_info'))),
-                              json={'hash': h, 'with_urls_occurrences': with_urls_occurrences,
+                              json={'body_hash': h, 'with_urls_occurrences': with_urls_occurrences,
                                     'cached_captures_only': cached_captures_only, 'limit': limit, 'offset': offset})
         return r.json()
 
