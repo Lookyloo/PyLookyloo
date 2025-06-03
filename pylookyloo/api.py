@@ -484,49 +484,58 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'export'))))
         return BytesIO(r.content)
 
-    def get_hash_occurrences(self, h: str) -> dict[str, Any]:
+    def get_hash_occurrences(self, h: str, *, with_urls_occurrences: bool=False, cached_captures_only: bool=True, limit: int=20, offset: int=0) -> dict[str, Any]:
         '''Returns the base64 body related the the hash, and a list of all the captures containing that hash.
 
         :param h: sha512 to search
+        :param with_urls_occurrences: If true, add details about the URLs from the URL nodes in the tree.
+        :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
+        :param limit: The max amount of entries to return.
+        :param offset: The offset to start from, useful for pagination.
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'hash_info', h))))
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'hash_info'))),
+                              json={'hash': h, 'with_urls_occurrences': with_urls_occurrences,
+                                    'cached_captures_only': cached_captures_only, 'limit': limit, 'offset': offset})
         return r.json()
 
-    def get_url_occurrences(self, url: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
+    def get_url_occurrences(self, url: str, *, with_urls_occurrences: bool=False, cached_captures_only: bool=True, limit: int=20, offset: int=0) -> dict[str, Any]:
         '''Returns all the captures contining the URL
 
         :param url: URL to lookup
         :param with_urls_occurrences: If true, add details about the URLs from the URL nodes in the tree.
-        :param limit: The max amount of entries to return.
         :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
+        :param limit: The max amount of entries to return.
+        :param offset: The offset to start from, useful for pagination.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'url_info'))),
                               json={'url': url, 'with_urls_occurrences': with_urls_occurrences,
                                     'cached_captures_only': cached_captures_only,
-                                    'limit': limit})
+                                    'limit': limit, 'offset': offset})
         return r.json()
 
-    def get_hostname_occurrences(self, hostname: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
+    def get_hostname_occurrences(self, hostname: str, *, with_urls_occurrences: bool=False, cached_captures_only: bool=True, limit: int=20, offset: int=0) -> dict[str, Any]:
         '''Returns all the captures contining the hostname.
 
         :param hostname: Hostname to lookup
         :param with_urls_occurrences: If true, add details about the related URLs.
-        :param limit: The max amount of entries to return.
         :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
+        :param limit: The max amount of entries to return.
+        :param offset: The offset to start from, useful for pagination.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'hostname_info'))),
                               json={'hostname': hostname, 'with_urls_occurrences': with_urls_occurrences,
                                     'cached_captures_only': cached_captures_only,
-                                    'limit': limit})
+                                    'limit': limit, 'offset': offset})
         return r.json()
 
-    def get_ip_occurrences(self, ip: str, with_urls_occurrences: bool=False, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
+    def get_ip_occurrences(self, ip: str, *, with_urls_occurrences: bool=False, cached_captures_only: bool=True, limit: int=20, offset: int=0) -> dict[str, Any]:
         '''Returns all the captures containing the IP address.
 
         :param ip: IP to lookup
         :param with_urls_occurrences: If true, add details about the related URLs.
-        :param limit: The max amount of entries to return.
         :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
+        :param limit: The max amount of entries to return.
+        :param offset: The offset to start from, useful for pagination.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'ip_info'))),
                               json={'ip': ip, 'with_urls_occurrences': with_urls_occurrences,
@@ -534,17 +543,19 @@ class Lookyloo():
                                     'limit': limit})
         return r.json()
 
-    def get_favicon_occurrences(self, favicon: str | BytesIO, limit: int=20, cached_captures_only: bool=True) -> dict[str, Any]:
+    def get_favicon_occurrences(self, favicon: str | BytesIO, *, cached_captures_only: bool=True, limit: int=20, offset: int=0) -> dict[str, Any]:
         '''Returns all the captures containing the favicon.
 
         :param favicon: Favicon to lookup. Either the hash, or the file in a BytesIO (hash will be generated on the fly)
-        :param limit: The max amount of entries to return.
         :param cached_captures_only: If False, Lookyloo will attempt to re-cache the missing captures. It might take some time.
+        :param limit: The max amount of entries to return.
+        :param offset: The offset to start from, useful for pagination.
         '''
         if isinstance(favicon, BytesIO):
             favicon = sha512(favicon.read()).hexdigest()
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'favicon_info'))),
-                              json={'favicon': favicon, 'limit': limit, 'cached_captures_only': cached_captures_only})
+                              json={'favicon': favicon, 'cached_captures_only': cached_captures_only,
+                                    'limit': limit, 'offset': offset})
         return r.json()
 
     def get_stats(self) -> dict[str, Any]:
