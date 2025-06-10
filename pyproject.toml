@@ -12,7 +12,7 @@ requires-python = ">=3.9"
 dynamic = [ "classifiers" ]
 
 dependencies = [
-    "requests (>=2.32.3)"
+    "requests (>=2.32.4)"
 ]
 
 [project.urls]
@@ -37,7 +37,7 @@ lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
 docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
-examples = ["pylacus (>=1.15.0)"]
+examples = ["pylacus (>=1.15.1)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.16.0"
