@@ -424,6 +424,14 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'hostnames'))))
         return r.json()
 
+    def get_ips(self, capture_uuid: str) -> dict[str, Any]:
+        '''Returns all the IPs seen during the capture.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'ips'))))
+        return r.json()
+
     def get_screenshot(self, capture_uuid: str) -> BytesIO:
         '''Returns the screenshot.
 
