@@ -42,7 +42,7 @@ examples = ["pylacus (>=1.15.1)"]
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.16.0"
 types-requests = "^2.32.4.20250611"
-pytest = "^8.4.0"
+pytest = "^8.4.1"
 
 [build-system]
 requires = ["poetry-core>=2.0"]
