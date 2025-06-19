@@ -40,9 +40,9 @@ docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
 examples = ["pylacus (>=1.15.1)"]
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.16.0"
+mypy = "^1.16.1"
 types-requests = "^2.32.4.20250611"
-pytest = "^8.4.0"
+pytest = "^8.4.1"
 
 [build-system]
 requires = ["poetry-core>=2.0"]
