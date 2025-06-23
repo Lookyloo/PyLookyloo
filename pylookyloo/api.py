@@ -90,7 +90,7 @@ class CompareSettings(TypedDict, total=False):
 class Lookyloo():
 
     def __init__(self, root_url: str='https://lookyloo.circl.lu/', useragent: str | None=None,
-                 *, proxies: dict[str, str] | None=None):
+                 *, proxies: dict[str, str] | None=None, verify: bool | str=True) -> None:
         '''Query a specific lookyloo instance.
 
         :param root_url: URL of the instance to query.
@@ -110,6 +110,7 @@ class Lookyloo():
             self.session.proxies.update(proxies)
         retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
         self.session.mount('http://', HTTPAdapter(max_retries=retries))
+        self.session.verify = verify
 
     @property
     def is_up(self) -> bool:
