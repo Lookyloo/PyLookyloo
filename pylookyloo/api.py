@@ -462,7 +462,7 @@ class Lookyloo():
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'storage'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'storage_state'))))
         return r.json()
 
     def get_html(self, capture_uuid: str) -> StringIO:
