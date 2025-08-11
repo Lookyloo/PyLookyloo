@@ -89,7 +89,7 @@ class CompareSettings(TypedDict, total=False):
 
 class Lookyloo():
 
-    def __init__(self, root_url: str='https://lookyloo.circl.lu/', useragent: str | None=None,
+    def __init__(self, root_url: str | None=None, useragent: str | None=None,
                  *, proxies: dict[str, str] | None=None, verify: bool | str=True) -> None:
         '''Query a specific lookyloo instance.
 
@@ -97,7 +97,7 @@ class Lookyloo():
         :param useragent: The User Agent used by requests to run the HTTP requests against Lookyloo, it is *not* passed to the captures.
         :param proxies: The proxies to use to connect to lookyloo (not the ones given to the capture itself) - More details: https://requests.readthedocs.io/en/latest/user/advanced/#proxies
         '''
-        self.root_url = root_url
+        self.root_url = root_url if root_url else 'https://lookyloo.circl.lu/'
         self.apikey: str | None = None
 
         if not urlparse(self.root_url).scheme:
