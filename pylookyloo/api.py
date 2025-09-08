@@ -72,6 +72,7 @@ class CaptureSettings(TypedDict, total=False):
     locale: str | None
     color_scheme: str | None
     java_script_enabled: bool
+    with_trusted_timestamps: bool
     headless: bool
     viewport: dict[str, int] | None
     referer: str | None
@@ -189,6 +190,7 @@ class Lookyloo():
                locale: str | None=None,
                color_scheme: str | None=None,
                java_script_enabled: bool=True,
+               with_trusted_timestamps: bool=False,
                headless: bool=True,
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
@@ -215,6 +217,7 @@ class Lookyloo():
                locale: str | None=None,
                color_scheme: str | None=None,
                java_script_enabled: bool | None=None,
+               with_trusted_timestamps: bool=False,
                headless: bool=True,
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
@@ -244,6 +247,7 @@ class Lookyloo():
         :param locale: The locale of the browser
         :param color_scheme: The prefered color scheme of the browser (light or dark)
         :param java_script_enabled: If False, no JS will run during the capture.
+        :param with_trusted_timestamps: If True, and a trusted timestamp provider is configured, trigger a request for trusted timestamps for forensic archival.
         :param headless: If False, the browser will be headed, it requires the capture to be done on a desktop.
         :param viewport: The viewport of the browser used for capturing
         :param referer: The referer URL for the capture
@@ -300,6 +304,8 @@ class Lookyloo():
                 to_send['color_scheme'] = color_scheme
             if java_script_enabled is not None:
                 to_send['java_script_enabled'] = java_script_enabled
+            if with_trusted_timestamps is not None:
+                to_send['with_trusted_timestamps'] = with_trusted_timestamps
             if headless is not None:
                 to_send['headless'] = headless
             if viewport:
