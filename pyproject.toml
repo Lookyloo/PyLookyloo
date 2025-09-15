@@ -41,7 +41,7 @@ examples = ["pylacus (>=1.17.1)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.17.1"
-types-requests = "^2.32.4.20250809"
+types-requests = "^2.32.4.20250913"
 pytest = "^8.4.2"
 
 [build-system]
