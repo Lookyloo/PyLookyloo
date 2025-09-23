@@ -73,7 +73,7 @@ class UnitTesting(unittest.TestCase):
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/referer', response['url'])
         self.assertFalse(response.get('referer'))
         response = self.github_instance.get_redirects(uuid)
-        self.assertEqual('https://www.google.dk/', response['response']['redirects'][-1])
+        self.assertEqual('https://www.google.com/', response['response']['redirects'][-1])
         uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/referer', quiet=True, referer='http://circl.lu')
         self._wait_capture_done(uuid)
         response = self.github_instance.get_info(uuid)
