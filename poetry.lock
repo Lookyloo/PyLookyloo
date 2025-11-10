@@ -500,15 +500,15 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pylacus"
-version = "1.19.0"
+version = "1.19.1"
 description = "Python CLI and module for lacus"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"examples\""
 files = [
-    {file = "pylacus-1.19.0-py3-none-any.whl", hash = "sha256:39302b10bd1ef766733e8e2d1a2358ec40cdca1caa962ae6ead236713d003ec4"},
-    {file = "pylacus-1.19.0.tar.gz", hash = "sha256:73964227642fa030c4f7bdd1e2e59e13d2551989dc09910515bb77ee4505c0de"},
+    {file = "pylacus-1.19.1-py3-none-any.whl", hash = "sha256:9ededaa55ad9fdf56c5a4eb597b4a09e6b617f335445a5f45e2cd93b5000e538"},
+    {file = "pylacus-1.19.1.tar.gz", hash = "sha256:446f8d8f06ef5b0636146a2fe2e8213195c7c70e67f6b9d2116ba1e8168ebd13"},
 ]
 
 [package.dependencies]
