@@ -37,12 +37,12 @@ lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
 docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
-examples = ["pylacus (>=1.19.0)"]
+examples = ["pylacus (>=1.19.1)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.18.2"
 types-requests = "^2.32.4.20250913"
-pytest = "^8.4.2"
+pytest = "^9.0.1"
 
 [build-system]
 requires = ["poetry-core>=2.0"]
