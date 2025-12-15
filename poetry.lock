@@ -587,22 +587,22 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pylacus"
-version = "1.20.0"
+version = "1.21.0"
 description = "Python CLI and module for lacus"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"examples\""
 files = [
-    {file = "pylacus-1.20.0-py3-none-any.whl", hash = "sha256:6986ecb4c2af6fa4c4b0b3e794775d609bfa7e0d09f89c880a2c654f945ae906"},
-    {file = "pylacus-1.20.0.tar.gz", hash = "sha256:4852b19baabd1dab256a3bf58f2e969b4ed5397a398f690022c90d4abe4d42c1"},
+    {file = "pylacus-1.21.0-py3-none-any.whl", hash = "sha256:0a8e025b994b97ea054970e61bc3da7ad3b87d95f259d291c22ab0691fa0e559"},
+    {file = "pylacus-1.21.0.tar.gz", hash = "sha256:dda71d34cc27abceb58df13a2ca29eadafb70441ed485f730444956a100be32e"},
 ]
 
 [package.dependencies]
 requests = ">=2.32.5"
 
 [package.extras]
-docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
+docs = ["Sphinx (>=9.0.4) ; python_version >= \"3.11\""]
 
 [[package]]
 name = "pytest"
