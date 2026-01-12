@@ -76,6 +76,7 @@ class CaptureSettings(TypedDict, total=False):
     headless: bool
     viewport: dict[str, int] | None
     referer: str | None
+    categories: list[str] | None
 
     listing: bool | None
     auto_report: bool | dict[str, str] | None
@@ -195,7 +196,8 @@ class Lookyloo():
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
                listing: bool | None=None,
-               auto_report: bool | dict[str, str] | None=None
+               auto_report: bool | dict[str, str] | None=None,
+               categories: list[str] | None=None
                ) -> str:
         ...
 
@@ -222,7 +224,8 @@ class Lookyloo():
                viewport: dict[str, int] | None=None,
                referer: str | None=None,
                listing: bool | None=None,
-               auto_report: bool | dict[str, str] | None=None
+               auto_report: bool | dict[str, str] | None=None,
+               categories: list[str] | None=None
                ) -> str:
         '''Submit a URL to a lookyloo instance.
 
@@ -256,6 +259,7 @@ class Lookyloo():
                             Pass True if you want to autoreport without any setting, or a dictionary with two keys:
                                 * email (required): the email of the submitter, so the analyst to get in touch
                                 * comment (optional): a comment about the capture to help the analyst
+        :param categories: (v1.37.0+) A list of categories to assign to the capture
         '''
         to_send: CaptureSettings
         if capture_settings:
@@ -316,6 +320,8 @@ class Lookyloo():
                 to_send['listing'] = listing
             if auto_report:
                 to_send['auto_report'] = auto_report
+            if categories:
+                to_send['categories'] = categories
 
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         response.raise_for_status()
