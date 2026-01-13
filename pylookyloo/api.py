@@ -678,7 +678,8 @@ class Lookyloo():
                        har: Path | BytesIO | str | None = None,
                        html: Path | BytesIO | str | None = None,
                        last_redirected_url: str | None = None,
-                       screenshot: Path | BytesIO | str | None = None) -> str:
+                       screenshot: Path | BytesIO | str | None = None,
+                       categories: list[str] | None=None) -> str:
         ...
 
     @overload
@@ -688,7 +689,8 @@ class Lookyloo():
                        har: Path | BytesIO | str | None = None,
                        html: Path | BytesIO | str | None = None,
                        last_redirected_url: str | None = None,
-                       screenshot: Path | BytesIO | str | None = None) -> tuple[str, dict[str, str]]:
+                       screenshot: Path | BytesIO | str | None = None,
+                       categories: list[str] | None=None) -> tuple[str, dict[str, str]]:
         ...
 
     def upload_capture(self, *, quiet: bool = False,
@@ -697,7 +699,8 @@ class Lookyloo():
                        har: Path | BytesIO | str | None = None,
                        html: Path | BytesIO | str | None = None,
                        last_redirected_url: str | None = None,
-                       screenshot: Path | BytesIO | str | None = None) -> str | tuple[str, dict[str, str]]:
+                       screenshot: Path | BytesIO | str | None = None,
+                       categories: list[str] | None=None) -> str | tuple[str, dict[str, str]]:
         '''Upload a capture via har-file and others
 
         :param quiet: Returns the UUID only, instead of the the UUID and the potential error / warning messages
@@ -707,6 +710,7 @@ class Lookyloo():
         :param html: rendered HTML of the capture
         :param last_redirected_url: The landing page of the capture
         :param screenshot: Screenshot of the capture
+        :param categories: The categories assigned to the capture
         '''
         def encode_document(document: Path | BytesIO | str) -> str:
             if isinstance(document, str):
@@ -719,6 +723,8 @@ class Lookyloo():
             return base64.b64encode(document.getvalue()).decode()
 
         to_send: dict[str, Any] = {'listing': listing}
+        if categories:
+            to_send['categories'] = categories
 
         if full_capture:
             b64_full_capture = encode_document(full_capture)
@@ -740,9 +746,13 @@ class Lookyloo():
         else:
             raise PyLookylooError("Full capture or at least har-file are required")
 
-        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'upload'))), json=to_send)
-        r.raise_for_status()
-        json_response = r.json()
+        try:
+            r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'upload'))), json=to_send)
+            r.raise_for_status()
+            json_response = r.json()
+        except Exception as e:
+            raise PyLookylooError(f'Unable to upload capture: {e}.')
+
         uuid = json_response['uuid']
         messages = json_response['messages']
 
