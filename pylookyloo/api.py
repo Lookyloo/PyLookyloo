@@ -748,8 +748,11 @@ class Lookyloo():
 
         try:
             r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'upload'))), json=to_send)
-            r.raise_for_status()
             json_response = r.json()
+            r.raise_for_status()
+        except requests.exceptions.HTTPError:
+            # We should have a response with details
+            raise PyLookylooError(f'Unable to upload capture: {json_response}.')
         except Exception as e:
             raise PyLookylooError(f'Unable to upload capture: {e}.')
 
