@@ -1,6 +1,6 @@
 [project]
 name = "pylookyloo"
-version = "1.36.3"
+version = "1.37.0"
 description = "Python CLI and module for Lookyloo"
 authors = [
     {name="Raphaël Vinot", email="raphael.vinot@circl.lu"}
@@ -37,7 +37,7 @@ lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
 docs = ["Sphinx (>=9.1.0) ; python_version >= \"3.12\""]
-examples = ["pylacus (>=1.21.2)"]
+examples = ["pylacus (>=1.21.3)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.19.1"
