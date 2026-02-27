@@ -61,7 +61,6 @@ class CaptureSettings(TypedDict, total=False):
     device_name: str | None
     user_agent: str | None
     proxy: str | dict[str, str] | None
-    remote_lacus_name: str | None
     general_timeout_in_sec: int | None
     cookies: list[dict[str, Any]] | None
     storage: str | dict[str, Any] | None
@@ -72,14 +71,21 @@ class CaptureSettings(TypedDict, total=False):
     locale: str | None
     color_scheme: str | None
     java_script_enabled: bool
-    with_trusted_timestamps: bool
-    headless: bool
-    viewport: dict[str, int] | None
+    viewport: dict[str, str | int] | None
     referer: str | None
-    categories: list[str] | None
+    with_screenshot: bool
+    with_favicon: bool
+    allow_tracking: bool
+    headless: bool
+    init_script: str | None
+    with_trusted_timestamps: bool
+    final_wait: int | None
 
+    # Lookyloo specific
     listing: bool | None
     auto_report: bool | dict[str, str] | None
+    remote_lacus_name: str | None
+    categories: list[str] | None
 
 
 class CompareSettings(TypedDict, total=False):
@@ -180,7 +186,6 @@ class Lookyloo():
                browser: str | None=None, device_name: str | None=None,
                user_agent: str | None=None,
                proxy: str | dict[str, str] | None=None,
-               remote_lacus_name: str | None=None,
                general_timeout_in_sec: int | None=None,
                cookies: list[dict[str, Any]] | None=None,
                storage: str | dict[str, Any] | None=None,
@@ -191,13 +196,20 @@ class Lookyloo():
                locale: str | None=None,
                color_scheme: str | None=None,
                java_script_enabled: bool=True,
-               with_trusted_timestamps: bool=False,
-               headless: bool=True,
-               viewport: dict[str, int] | None=None,
+               viewport: dict[str, str | int] | None=None,
                referer: str | None=None,
+               with_screenshot: bool=True,
+               with_favicon: bool=True,
+               allow_tracking: bool=False,
+               headless: bool=True,
+               init_script: str | None=None,
+               with_trusted_timestamps: bool=False,
+               final_wait: int | None = None,
+               # Lookyloo specific
                listing: bool | None=None,
                auto_report: bool | dict[str, str] | None=None,
-               categories: list[str] | None=None
+               remote_lacus_name: str | None=None,
+               categories: list[str] | None=None,
                ) -> str:
         ...
 
@@ -208,7 +220,6 @@ class Lookyloo():
                browser: str | None=None, device_name: str | None=None,
                user_agent: str | None=None,
                proxy: str | dict[str, str] | None=None,
-               remote_lacus_name: str | None=None,
                general_timeout_in_sec: int | None=None,
                cookies: list[dict[str, Any]] | None=None,
                storage: str | dict[str, Any] | None=None,
@@ -218,14 +229,21 @@ class Lookyloo():
                timezone_id: str | None=None,
                locale: str | None=None,
                color_scheme: str | None=None,
-               java_script_enabled: bool | None=None,
-               with_trusted_timestamps: bool=False,
-               headless: bool=True,
-               viewport: dict[str, int] | None=None,
+               java_script_enabled: bool=True,
+               viewport: dict[str, str | int] | None=None,
                referer: str | None=None,
+               with_screenshot: bool=True,
+               with_favicon: bool=True,
+               allow_tracking: bool=False,
+               headless: bool=True,
+               init_script: str | None=None,
+               with_trusted_timestamps: bool=False,
+               final_wait: int | None = None,
+               # Lookyloo specific
                listing: bool | None=None,
                auto_report: bool | dict[str, str] | None=None,
-               categories: list[str] | None=None
+               remote_lacus_name: str | None=None,
+               categories: list[str] | None=None,
                ) -> str:
         '''Submit a URL to a lookyloo instance.
 
@@ -240,9 +258,9 @@ class Lookyloo():
         :param device_name: The name of the device, must be something Playwright knows
         :param user_agent: The user agent the browser will use for the capture
         :param proxy: Capture via a proxy. It can either be the full URL to a SOCKS5 proxy, or the name of a specific proxy configured on a remote lacus instance.
-        :param remote_lacus_name: The name of the remote Lacus instance to use for the capture (only if lookyloo is configured this way)
         :param general_timeout_in_sec: The capture will raise a timeout it it takes more than that time
         :param cookies: A list of cookies
+        :param storage: The storage as exported from another capture. Can contain the IndexedDB.
         :param headers: The headers to pass to the capture
         :param http_credentials: HTTP Credentials to pass to the capture
         :param geolocation: The geolocation of the browser latitude/longitude
@@ -250,15 +268,22 @@ class Lookyloo():
         :param locale: The locale of the browser
         :param color_scheme: The prefered color scheme of the browser (light or dark)
         :param java_script_enabled: If False, no JS will run during the capture.
-        :param with_trusted_timestamps: If True, and a trusted timestamp provider is configured, trigger a request for trusted timestamps for forensic archival.
-        :param headless: If False, the browser will be headed, it requires the capture to be done on a desktop.
         :param viewport: The viewport of the browser used for capturing
         :param referer: The referer URL for the capture
+        :param with_screenshot: Is False, do not take a screenshot at the end of the capture
+        :param with_favicon: If False, do not try to find favicons in the rendered page
+        :param allow_tracking: If True, attempt to find the overlay asking for the permission to track you and allow everything (best effort, please get in touch if needed)
+        :param headless: If False, the browser will be headed, it requires the capture to be done on a desktop.
+        :param init_script: JavaScript code to inject in the rendered page, before the page starts loading.
+        :param with_trusted_timestamps: If True, and a trusted timestamp provider is configured, trigger a request for trusted timestamps for forensic archival.
+        :param final_wait: The wait time after the instrumentaiton if over. The capture finishes immediately after that wait time.
+
         :param listing: If False, the capture will be not be on the publicly accessible index page of lookyloo
         :param auto_report: If set, the capture will automatically be forwarded to an analyst (if the instance is configured this way)
                             Pass True if you want to autoreport without any setting, or a dictionary with two keys:
                                 * email (required): the email of the submitter, so the analyst to get in touch
                                 * comment (optional): a comment about the capture to help the analyst
+        :param remote_lacus_name: The name of the remote Lacus instance to use for the capture (only if lookyloo is configured this way)
         :param categories: (v1.37.0+) A list of categories to assign to the capture
         '''
         to_send: CaptureSettings
@@ -308,18 +333,30 @@ class Lookyloo():
                 to_send['color_scheme'] = color_scheme
             if java_script_enabled is not None:
                 to_send['java_script_enabled'] = java_script_enabled
-            if with_trusted_timestamps is not None:
-                to_send['with_trusted_timestamps'] = with_trusted_timestamps
-            if headless is not None:
-                to_send['headless'] = headless
             if viewport:
                 to_send['viewport'] = viewport
             if referer:
                 to_send['referer'] = referer
+            if with_screenshot is not None:
+                to_send['with_screenshot'] = with_screenshot
+            if with_favicon is not None:
+                to_send['with_favicon'] = with_favicon
+            if allow_tracking is not None:
+                to_send['allow_tracking'] = allow_tracking
+            if headless is not None:
+                to_send['headless'] = headless
+            if init_script:
+                to_send['init_script'] = init_script
+            if with_trusted_timestamps is not None:
+                to_send['with_trusted_timestamps'] = with_trusted_timestamps
+            if final_wait is not None:
+                to_send['final_wait'] = final_wait
             if listing is not None:
                 to_send['listing'] = listing
             if auto_report:
                 to_send['auto_report'] = auto_report
+            if remote_lacus_name:
+                to_send['remote_lacus_name'] = remote_lacus_name
             if categories:
                 to_send['categories'] = categories
 
