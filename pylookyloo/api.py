@@ -86,6 +86,7 @@ class CaptureSettings(TypedDict, total=False):
     auto_report: bool | dict[str, str] | None
     remote_lacus_name: str | None
     categories: list[str] | None
+    monitor_capture: dict[str, str | bool] | None
 
 
 class CompareSettings(TypedDict, total=False):
@@ -210,6 +211,7 @@ class Lookyloo():
                auto_report: bool | dict[str, str] | None=None,
                remote_lacus_name: str | None=None,
                categories: list[str] | None=None,
+               monitor_capture: dict[str, str | bool] | None=None,
                ) -> str:
         ...
 
@@ -244,6 +246,7 @@ class Lookyloo():
                auto_report: bool | dict[str, str] | None=None,
                remote_lacus_name: str | None=None,
                categories: list[str] | None=None,
+               monitor_capture: dict[str, str | bool] | None=None,
                ) -> str:
         '''Submit a URL to a lookyloo instance.
 
@@ -285,6 +288,7 @@ class Lookyloo():
                                 * comment (optional): a comment about the capture to help the analyst
         :param remote_lacus_name: The name of the remote Lacus instance to use for the capture (only if lookyloo is configured this way)
         :param categories: (v1.37.0+) A list of categories to assign to the capture
+        :param monitor_capture: (v1.38.0+) The settings to pass to the monitoring interface. The only required key is "frequency" (hourly/daily).
         '''
         to_send: CaptureSettings
         if capture_settings:
@@ -359,6 +363,8 @@ class Lookyloo():
                 to_send['remote_lacus_name'] = remote_lacus_name
             if categories:
                 to_send['categories'] = categories
+            if monitor_capture:
+                to_send['monitor_capture'] = monitor_capture
 
         response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
         response.raise_for_status()
