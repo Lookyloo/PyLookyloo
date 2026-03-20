@@ -1,18 +1,19 @@
 [project]
 name = "pylookyloo"
-version = "1.37.0"
+version = "1.37.1"
 description = "Python CLI and module for Lookyloo"
 authors = [
     {name="Raphaël Vinot", email="raphael.vinot@circl.lu"}
 ]
 license = "GPL-2.0-or-later"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.15"
 
 dynamic = [ "classifiers" ]
 
 dependencies = [
-    "requests (>=2.32.5)"
+    "requests (>=2.32.5)",
+    "lookyloo-models (>=0.1.1,<0.2.0)"
 ]
 
 [project.urls]
@@ -37,7 +38,7 @@ lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
 docs = ["Sphinx (>=9.1.0) ; python_version >= \"3.12\""]
-examples = ["pylacus (>=1.21.3)"]
+examples = ["pylacus (>=1.22.0)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.19.1"

@@ -10,16 +10,21 @@ from datetime import datetime
 from hashlib import sha512
 from importlib.metadata import version
 from io import BytesIO, StringIO
-from typing import Any, TypedDict, overload, Literal
+from typing import Any, overload, Literal
 from urllib.parse import urljoin, urlparse
 from pathlib import PurePosixPath, Path
 
 import requests
 
+from pydantic import ValidationError
 from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 from requests.status_codes import codes
+
+from lookyloo_models import (LookylooCaptureSettings, Cookie, HttpCredentialsSettings,
+                             GeolocationSettings, ViewportSettings, CaptureSettingsError,
+                             CompareSettings)
 
 
 class SafeRedirectRePOSTSession(Session):
@@ -49,51 +54,6 @@ class PyLookylooError(Exception):
 
 class AuthError(PyLookylooError):
     pass
-
-
-class CaptureSettings(TypedDict, total=False):
-    '''The capture settings that can be passed to Lookyloo.'''
-
-    url: str | None
-    document_name: str | None
-    document: str | None
-    browser: str | None
-    device_name: str | None
-    user_agent: str | None
-    proxy: str | dict[str, str] | None
-    general_timeout_in_sec: int | None
-    cookies: list[dict[str, Any]] | None
-    storage: str | dict[str, Any] | None
-    headers: str | dict[str, str] | None
-    http_credentials: dict[str, int] | None
-    geolocation: dict[str, float] | None
-    timezone_id: str | None
-    locale: str | None
-    color_scheme: str | None
-    java_script_enabled: bool
-    viewport: dict[str, str | int] | None
-    referer: str | None
-    with_screenshot: bool
-    with_favicon: bool
-    allow_tracking: bool
-    headless: bool
-    init_script: str | None
-    with_trusted_timestamps: bool
-    final_wait: int | None
-
-    # Lookyloo specific
-    listing: bool | None
-    auto_report: bool | dict[str, str] | None
-    remote_lacus_name: str | None
-    categories: list[str] | None
-    monitor_capture: dict[str, str | bool] | None
-
-
-class CompareSettings(TypedDict, total=False):
-    '''The settings that can be passed to the compare method on lookyloo side to filter out some differences'''
-
-    ressources_ignore_domains: list[str] | None
-    ressources_ignore_regexes: list[str] | None
 
 
 class Lookyloo():
@@ -177,27 +137,28 @@ class Lookyloo():
 
     @overload
     def submit(self, *, quiet: bool=False,
-               capture_settings: CaptureSettings | None=None) -> str:
+               capture_settings: LookylooCaptureSettings | dict[str, Any] | None=None) -> str:
         ...
 
     @overload
     def submit(self, *, quiet: bool=False,
                url: str | None=None,
                document_name: str | None=None, document: Path | BytesIO | None=None,
-               browser: str | None=None, device_name: str | None=None,
+               browser: Literal['chromium', 'firefox', 'webkit'] | None=None,
+               device_name: str | None=None,
                user_agent: str | None=None,
                proxy: str | dict[str, str] | None=None,
                general_timeout_in_sec: int | None=None,
-               cookies: list[dict[str, Any]] | None=None,
+               cookies: list[dict[str, Any]] | list[Cookie] | None=None,
                storage: str | dict[str, Any] | None=None,
                headers: str | dict[str, str] | None=None,
-               http_credentials: dict[str, int] | None=None,
-               geolocation: dict[str, float] | None=None,
+               http_credentials: dict[str, str] | HttpCredentialsSettings | None=None,
+               geolocation: dict[str, str | int | float] | GeolocationSettings | None=None,
                timezone_id: str | None=None,
                locale: str | None=None,
-               color_scheme: str | None=None,
+               color_scheme: Literal['dark', 'light', 'no-preference', 'null'] | None=None,
                java_script_enabled: bool=True,
-               viewport: dict[str, str | int] | None=None,
+               viewport: dict[str, str | int] | ViewportSettings | None=None,
                referer: str | None=None,
                with_screenshot: bool=True,
                with_favicon: bool=True,
@@ -216,23 +177,24 @@ class Lookyloo():
         ...
 
     def submit(self, *, quiet: bool=False,
-               capture_settings: CaptureSettings | None=None,
+               capture_settings: LookylooCaptureSettings | dict[str, Any] | None=None,
                url: str | None=None,
                document_name: str | None=None, document: Path | BytesIO | None=None,
-               browser: str | None=None, device_name: str | None=None,
+               browser: Literal['chromium', 'firefox', 'webkit'] | None=None,
+               device_name: str | None=None,
                user_agent: str | None=None,
                proxy: str | dict[str, str] | None=None,
                general_timeout_in_sec: int | None=None,
-               cookies: list[dict[str, Any]] | None=None,
+               cookies: list[dict[str, Any]] | list[Cookie] | None=None,
                storage: str | dict[str, Any] | None=None,
                headers: str | dict[str, str] | None=None,
-               http_credentials: dict[str, int] | None=None,
-               geolocation: dict[str, float] | None=None,
+               http_credentials: dict[str, str] | HttpCredentialsSettings | None=None,
+               geolocation: dict[str, str | int | float] | GeolocationSettings | None=None,
                timezone_id: str | None=None,
                locale: str | None=None,
-               color_scheme: str | None=None,
+               color_scheme: Literal['dark', 'light', 'no-preference', 'null'] | None=None,
                java_script_enabled: bool=True,
-               viewport: dict[str, str | int] | None=None,
+               viewport: dict[str, str | int] | ViewportSettings | None=None,
                referer: str | None=None,
                with_screenshot: bool=True,
                with_favicon: bool=True,
@@ -290,83 +252,58 @@ class Lookyloo():
         :param categories: (v1.37.0+) A list of categories to assign to the capture
         :param monitor_capture: (v1.38.0+) The settings to pass to the monitoring interface. The only required key is "frequency" (hourly/daily).
         '''
-        to_send: CaptureSettings
-        if capture_settings:
-            to_send = capture_settings
-            if 'document' not in to_send and 'url' not in to_send:
-                raise PyLookylooError('url or document are required')
+        b64_document: str | None = None
+        if document:
+            if isinstance(document, Path):
+                if not document_name:
+                    document_name = document.name
+                with document.open('rb') as f:
+                    document = BytesIO(f.read())
+            b64_document = base64.b64encode(document.getvalue()).decode()
+
+        if not capture_settings:
+            capture_settings = {
+                'document': b64_document,
+                'document_name': document_name,
+                'url': url,
+                'browser': browser,
+                'device_name': device_name,
+                'user_agent': user_agent,
+                'proxy': proxy,
+                'general_timeout_in_sec': general_timeout_in_sec,
+                'cookies': cookies,
+                'storage': storage,
+                'headers': headers,
+                'http_credentials': http_credentials,
+                'geolocation': geolocation,
+                'timezone_id': timezone_id,
+                'locale': locale,
+                'color_scheme': color_scheme,
+                'java_script_enabled': java_script_enabled,
+                'viewport': viewport,
+                'referer': referer,
+                'with_screenshot': with_screenshot,
+                'with_favicon': with_favicon,
+                'allow_tracking': allow_tracking,
+                'headless': headless,
+                'init_script': init_script,
+                'with_trusted_timestamps': with_trusted_timestamps,
+                'final_wait': final_wait,
+                'listing': listing,
+                'auto_report': auto_report,
+                'remote_lacus_name': remote_lacus_name,
+                'categories': categories,
+                'monitor_capture': monitor_capture
+            }
+        if isinstance(capture_settings, dict):
+            try:
+                to_enqueue = LookylooCaptureSettings(**capture_settings)
+            except ValidationError as e:
+                raise CaptureSettingsError('Invalid settings', e)
         else:
-            if not document and not url:
-                raise PyLookylooError('url or document are required')
-            if document:
-                if isinstance(document, Path):
-                    if not document_name:
-                        document_name = document.name
-                    with document.open('rb') as f:
-                        document = BytesIO(f.read())
-                b64_doc = base64.b64encode(document.getvalue()).decode()
-                to_send = {'document': b64_doc, 'document_name': document_name}
-            elif url:
-                to_send = {'url': url}
+            to_enqueue = capture_settings
 
-            if browser:
-                to_send['browser'] = browser
-            if device_name:
-                to_send['device_name'] = device_name
-            if user_agent:
-                to_send['user_agent'] = user_agent
-            if proxy:
-                to_send['proxy'] = proxy
-            if general_timeout_in_sec is not None:  # that would be a terrible i
-                to_send['general_timeout_in_sec'] = general_timeout_in_sec
-            if cookies:
-                to_send['cookies'] = cookies
-            if storage:
-                to_send['storage'] = storage
-            if headers:
-                to_send['headers'] = headers
-            if http_credentials:
-                to_send['http_credentials'] = http_credentials
-            if geolocation:
-                to_send['geolocation'] = geolocation
-            if timezone_id:
-                to_send['timezone_id'] = timezone_id
-            if locale:
-                to_send['locale'] = locale
-            if color_scheme:
-                to_send['color_scheme'] = color_scheme
-            if java_script_enabled is not None:
-                to_send['java_script_enabled'] = java_script_enabled
-            if viewport:
-                to_send['viewport'] = viewport
-            if referer:
-                to_send['referer'] = referer
-            if with_screenshot is not None:
-                to_send['with_screenshot'] = with_screenshot
-            if with_favicon is not None:
-                to_send['with_favicon'] = with_favicon
-            if allow_tracking is not None:
-                to_send['allow_tracking'] = allow_tracking
-            if headless is not None:
-                to_send['headless'] = headless
-            if init_script:
-                to_send['init_script'] = init_script
-            if with_trusted_timestamps is not None:
-                to_send['with_trusted_timestamps'] = with_trusted_timestamps
-            if final_wait is not None:
-                to_send['final_wait'] = final_wait
-            if listing is not None:
-                to_send['listing'] = listing
-            if auto_report:
-                to_send['auto_report'] = auto_report
-            if remote_lacus_name:
-                to_send['remote_lacus_name'] = remote_lacus_name
-            if categories:
-                to_send['categories'] = categories
-            if monitor_capture:
-                to_send['monitor_capture'] = monitor_capture
-
-        response = self.session.post(urljoin(self.root_url, 'submit'), json=to_send)
+        response = self.session.post(urljoin(self.root_url, 'submit'), data=to_enqueue.model_dump_json())
         response.raise_for_status()
         uuid = response.json()
         if not uuid:
@@ -646,17 +583,23 @@ class Lookyloo():
                               json={'capture_uuid': capture_uuid, 'filter': filter_contacts})
         return r.json()
 
-    def compare_captures(self, capture_left: str, capture_right: str, /, *, compare_settings: CompareSettings | None=None) -> dict[str, Any]:
+    def compare_captures(self, capture_left: str, capture_right: str, /, *, compare_settings: CompareSettings | dict[str, Any] | None=None) -> dict[str, Any]:
         '''Compares two captures
 
         :param capture_left: UUID of the capture to compare from
         :param capture_right: UUID of the capture to compare to
         :param compare_settings: The settings for the comparison itself (what to ignore without marking the captures as different)
         '''
+        cs = None
+        if compare_settings:
+            if isinstance(compare_settings, dict):
+                cs = CompareSettings(**compare_settings)
+            else:
+                cs = compare_settings
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'compare_captures'))),
                               json={'capture_left': capture_left,
                                     'capture_right': capture_right,
-                                    'compare_settings': compare_settings})
+                                    'compare_settings': cs.model_dump_json() if cs else None})
         return r.json()
 
     def get_modules_responses(self, tree_uuid: str) -> dict[str, Any]:

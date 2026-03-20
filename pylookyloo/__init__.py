@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from .api import Lookyloo, CaptureSettings, PyLookylooError, AuthError, CompareSettings  # noqa
+from .api import Lookyloo, PyLookylooError, AuthError  # noqa
 
 
 def main() -> None:
@@ -37,4 +37,4 @@ def main() -> None:
         print(f'Unable to reach {lookyloo.root_url}. Is the server up?')
 
 
-__all__ = ['Lookyloo', 'CaptureSettings', 'PyLookylooError', 'AuthError', 'CompareSettings']
+__all__ = ['Lookyloo', 'PyLookylooError', 'AuthError']
