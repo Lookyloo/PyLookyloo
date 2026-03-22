@@ -166,9 +166,9 @@ class Lookyloo():
                headless: bool=True,
                init_script: str | None=None,
                with_trusted_timestamps: bool=False,
-               final_wait: int | None = None,
+               final_wait: int=1,
                # Lookyloo specific
-               listing: bool | None=None,
+               listing: bool=False,
                auto_report: bool | dict[str, str] | None=None,
                remote_lacus_name: str | None=None,
                categories: list[str] | None=None,
@@ -202,9 +202,9 @@ class Lookyloo():
                headless: bool=True,
                init_script: str | None=None,
                with_trusted_timestamps: bool=False,
-               final_wait: int | None = None,
+               final_wait: int=1,
                # Lookyloo specific
-               listing: bool | None=None,
+               listing: bool=False,
                auto_report: bool | dict[str, str] | None=None,
                remote_lacus_name: str | None=None,
                categories: list[str] | None=None,
