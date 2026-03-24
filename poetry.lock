@@ -441,14 +441,14 @@ files = [
 
 [[package]]
 name = "lookyloo-models"
-version = "0.1.2"
+version = "0.1.4"
 description = "All the Pydantic models used across Lookyloo"
 optional = false
-python-versions = "<3.15,>=3.10"
+python-versions = "<4,>=3.10"
 groups = ["main"]
 files = [
-    {file = "lookyloo_models-0.1.2-py3-none-any.whl", hash = "sha256:043173e5575419c3e66228a3a65d98956630906eb8f1f20e9191878fdb1480ef"},
-    {file = "lookyloo_models-0.1.2.tar.gz", hash = "sha256:9636c0373668a31486d772c7c526648190eba6226b1806be67629c1caf468f04"},
+    {file = "lookyloo_models-0.1.4-py3-none-any.whl", hash = "sha256:59fad65f1fad9b79f677703da18ef691c0d05c4a5d79708ea043be369fb7b125"},
+    {file = "lookyloo_models-0.1.4.tar.gz", hash = "sha256:d6ff248d5ba4489ec6cfbff20ada38d363c737a1a024a3f9277f7f0a14bbdc22"},
 ]
 
 [package.dependencies]
@@ -936,15 +936,15 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pylacus"
-version = "1.22.1"
+version = "1.22.3"
 description = "Python CLI and module for lacus"
 optional = true
 python-versions = "<3.15,>=3.10"
 groups = ["main"]
 markers = "extra == \"examples\""
 files = [
-    {file = "pylacus-1.22.1-py3-none-any.whl", hash = "sha256:fdae0a17cd1efd79c301585e06b61db69cde1d60d778372100048cdcae835b62"},
-    {file = "pylacus-1.22.1.tar.gz", hash = "sha256:ed77cb9b3bd70acf3324fc64065384a09731edaaf03f52552b22b3321002c580"},
+    {file = "pylacus-1.22.3-py3-none-any.whl", hash = "sha256:d66e1d42979a28e15817b233b4866bdff0e7117f06f9c7659aae7984dd8bc5a9"},
+    {file = "pylacus-1.22.3.tar.gz", hash = "sha256:ee559685f650bb40ce2051ab59a8d69efe61a9b0a845f43cccdf5613543599ef"},
 ]
 
 [package.dependencies]
@@ -1401,14 +1401,14 @@ files = [
 
 [[package]]
 name = "types-requests"
-version = "2.32.4.20260107"
+version = "2.32.4.20260324"
 description = "Typing stubs for requests"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "types_requests-2.32.4.20260107-py3-none-any.whl", hash = "sha256:b703fe72f8ce5b31ef031264fe9395cac8f46a04661a79f7ed31a80fb308730d"},
-    {file = "types_requests-2.32.4.20260107.tar.gz", hash = "sha256:018a11ac158f801bfa84857ddec1650750e393df8a004a8a9ae2a9bec6fcb24f"},
+    {file = "types_requests-2.32.4.20260324-py3-none-any.whl", hash = "sha256:f83ef2deb284fe99a249b8b0b0a3e4b9809e01ff456063c4df0aac7670c07ab9"},
+    {file = "types_requests-2.32.4.20260324.tar.gz", hash = "sha256:33a2a9ccb1de7d4e4da36e347622c35418f6761269014cc32857acabd5df739e"},
 ]
 
 [package.dependencies]
@@ -1601,4 +1601,4 @@ examples = ["pylacus"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.15"
-content-hash = "4fe54829449b6d8fa2610dcad638abeae67d51077a007b9626a675bea00bfa6d"
+content-hash = "5c893ba5e865ba9520eafec7e95cd40cc3c63d8de631321aa1112dc31e292d5a"
