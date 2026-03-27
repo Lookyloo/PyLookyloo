@@ -297,7 +297,7 @@ class Lookyloo():
             }
         if isinstance(capture_settings, dict):
             try:
-                to_enqueue = LookylooCaptureSettings(**capture_settings)
+                to_enqueue = LookylooCaptureSettings.model_validate(capture_settings)
             except ValidationError as e:
                 raise CaptureSettingsError('Invalid settings', e)
         else:
@@ -593,7 +593,7 @@ class Lookyloo():
         cs = None
         if compare_settings:
             if isinstance(compare_settings, dict):
-                cs = CompareSettings(**compare_settings)
+                cs = CompareSettings.model_validate(compare_settings)
             else:
                 cs = compare_settings
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'compare_captures'))),

@@ -47,7 +47,7 @@ class UnitTesting(unittest.TestCase):
         oldest_capture_time = datetime.now()
         time.sleep(1)
         # Query a url for capture; save uuid of the capture in a variable
-        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/redirect_http', quiet=True)
+        uuid = self.github_instance.submit(url='https://rafiot.eu.pythonanywhere.com/redirect_http', listing=True, quiet=True)
         self._wait_capture_done(uuid)
         response = self.github_instance.get_redirects(uuid)
         self.assertEqual('https://rafiot.eu.pythonanywhere.com/redirect_http', response['response']['url'])
