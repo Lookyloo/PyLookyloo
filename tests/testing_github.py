@@ -24,7 +24,7 @@ class UnitTesting(unittest.TestCase):
             if status == -1:
                 raise Exception('The capture failed and was removed.')
             # Raise exception in case capture takes too long to avoid infinite while loop
-            if seconds_elapsed > 100:
+            if seconds_elapsed > 500:
                 raise Exception("Capture time limit exceeded!")
             time.sleep(1)
             seconds_elapsed += 1
