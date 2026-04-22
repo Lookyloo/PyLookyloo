@@ -41,7 +41,7 @@ lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
 docs = ["sphinx (>=9.1.0) ; python_version >= \"3.12\""]
-examples = ["pylacus (>=1.24.0)"]
+examples = ["pylacus (>=1.24.1)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.20.2"
