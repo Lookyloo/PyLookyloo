@@ -1436,15 +1436,15 @@ files = [
 
 [[package]]
 name = "types-deprecated"
-version = "1.3.1.20260508"
+version = "1.3.1.20260520"
 description = "Typing stubs for Deprecated"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 markers = "python_version < \"3.13\""
 files = [
-    {file = "types_deprecated-1.3.1.20260508-py3-none-any.whl", hash = "sha256:02de536e9a57fc5fdff09ecfdaae3099a000764597ec4c03b343db4f09adbb37"},
-    {file = "types_deprecated-1.3.1.20260508.tar.gz", hash = "sha256:a03c378da8fd83e2d5715fcdab204cfed1cfccf09766163390333684bb8413c8"},
+    {file = "types_deprecated-1.3.1.20260520-py3-none-any.whl", hash = "sha256:8af853b7ccd3b7685159f3ab2e3b6f7999b6cd7e425cda02749e32a42a96c7d6"},
+    {file = "types_deprecated-1.3.1.20260520.tar.gz", hash = "sha256:4d0d9e5521432d9ce88169fb8b793b45d70d8e8cc1a7ecd5a4465abbf83c9ab4"},
 ]
 
 [[package]]
@@ -1722,4 +1722,4 @@ examples = ["pylacus"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.15"
-content-hash = "612e6cc388b70230243b765a2549d7c0b38f2f08a3b668a44c2fa031461207ec"
+content-hash = "f62553237f979e961f5af3f4fe3c750c5c9f2e5eb88a2ada572319349c241921"
