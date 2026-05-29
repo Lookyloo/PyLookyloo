@@ -346,6 +346,11 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_export'))))
         return r.json()
 
+    def ai_export(self, tree_uuid: str) -> dict[str, Any]:
+        '''Export the capture in a format you can shove in a model'''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'ai_export'))))
+        return r.json()
+
     def misp_push(self, tree_uuid: str) -> dict[str, Any] | list[dict[str, Any]]:
         '''Push the capture to a pre-configured MISP instance (requires an authenticated user, use init_apikey first)
         Note: if the response is a dict, it is an error mesage. If it is a list, it's a list of MISP event.
@@ -457,8 +462,16 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'storage_state'))))
         return r.json()
 
+    def get_html_as_markdown(self, capture_uuid: str) -> StringIO:
+        '''Returns the rendered HTML as it is in the browser after the page loaded, and convert it to markdown.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('tree', capture_uuid, 'html_as_markdown'))))
+        return StringIO(r.text)
+
     def get_html(self, capture_uuid: str) -> StringIO:
-        '''Returns the rendered HTML as it would be in the browser after the page loaded.
+        '''Returns the rendered HTML as it is in the browser after the page loaded.
 
         :param capture_uuid: UUID of the capture
         '''
