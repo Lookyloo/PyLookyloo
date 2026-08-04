@@ -169,6 +169,7 @@ class Lookyloo():
                final_wait: int=1,
                # Lookyloo specific
                listing: bool=False,
+               private: bool=False,
                auto_report: bool | dict[str, str] | None=None,
                remote_lacus_name: str | None=None,
                categories: list[str] | None=None,
@@ -205,11 +206,12 @@ class Lookyloo():
                final_wait: int=1,
                # Lookyloo specific
                listing: bool=False,
+               private: bool=False,
                auto_report: bool | dict[str, str] | None=None,
                remote_lacus_name: str | None=None,
                categories: list[str] | None=None,
                monitor_capture: dict[str, str | bool] | None=None,
-               ) -> str:
+               ) -> str | dict[str, str]:
         '''Submit a URL to a lookyloo instance.
 
         :param quiet: Returns the UUID only, instead of the whole URL
@@ -244,6 +246,7 @@ class Lookyloo():
         :param final_wait: The wait time after the instrumentaiton if over. The capture finishes immediately after that wait time.
 
         :param listing: If False, the capture will be not be on the publicly accessible index page of lookyloo
+        :param private: If true, the capture will be private and only accessible with a temporary seed, or as admin
         :param auto_report: If set, the capture will automatically be forwarded to an analyst (if the instance is configured this way)
                             Pass True if you want to autoreport without any setting, or a dictionary with two keys:
                                 * email (required): the email of the submitter, so the analyst to get in touch
@@ -290,6 +293,7 @@ class Lookyloo():
                 'with_trusted_timestamps': with_trusted_timestamps,
                 'final_wait': final_wait,
                 'listing': listing,
+                'private': private,
                 'auto_report': auto_report,
                 'remote_lacus_name': remote_lacus_name,
                 'categories': categories,
@@ -305,12 +309,19 @@ class Lookyloo():
 
         response = self.session.post(urljoin(self.root_url, 'submit'), data=to_enqueue.model_dump_json())
         response.raise_for_status()
-        uuid = response.json()
-        if not uuid:
+        r = response.json()
+        if not r:
             raise PyLookylooError('Unable to get UUID from lookyloo instance.')
+
         if quiet:
-            return uuid
-        return urljoin(self.root_url, f'tree/{uuid}')
+            return r
+        if isinstance(r, str):
+            return urljoin(self.root_url, f'tree/{r}')
+        else:
+            # have a seed
+            uuid = r.get('uuid')
+            seed = r.get('seed')
+            return urljoin(self.root_url, f'tree/{uuid}?seed={seed}')
 
     def get_apikey(self, username: str, password: str) -> dict[str, str]:
         '''Get the API key for the given user.'''
