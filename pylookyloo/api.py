@@ -473,6 +473,14 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'storage_state'))))
         return r.json()
 
+    def get_console_messages(self, capture_uuid: str) -> list[dict[str, Any]]:
+        '''Returns the messages printed in the console during the capture.
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'console_messages'))))
+        return r.json()
+
     def get_html_as_markdown(self, capture_uuid: str) -> StringIO:
         '''Returns the rendered HTML as it is in the browser after the page loaded, and convert it to markdown.
 
