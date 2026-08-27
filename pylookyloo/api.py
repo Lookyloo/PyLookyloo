@@ -90,14 +90,14 @@ class Lookyloo():
             return False
         return r.status_code == 200
 
-    def get_status(self, tree_uuid: str) -> dict[str, Any]:
+    def get_status(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Get the status of a capture:
             * -1: Unknown capture.
             * 0: The capture is queued up but not processed yet.
             * 1: The capture is ready.
             * 2: The capture is ongoing and will be ready soon.
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'status'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'status'))), params={'seed': seed})
         return r.json()
 
     def get_remote_lacuses(self) -> list[dict[str, Any]]:
@@ -105,19 +105,19 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'remote_lacuses'))))
         return r.json()
 
-    def get_capture_stats(self, tree_uuid: str) -> dict[str, Any]:
+    def get_capture_stats(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Get statistics of the capture'''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'stats'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'stats'))), params={'seed': seed})
         return r.json()
 
-    def get_info(self, tree_uuid: str) -> dict[str, Any]:
+    def get_info(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Get information about the capture (url, timestamp, user agent)'''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'info'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'info'))), params={'seed': seed})
         return r.json()
 
-    def get_comparables(self, tree_uuid: str) -> dict[str, Any]:
+    def get_comparables(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Get comparable information from the capture'''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'comparables'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'comparables'))), params={'seed': seed})
         return r.json()
 
     def enqueue(self, url: str | None=None, quiet: bool=False,  # type: ignore[no-untyped-def]
@@ -132,12 +132,15 @@ class Lookyloo():
         :param kwargs: accepts all the parameters supported by `Lookyloo.capture`
         '''
         warnings.warn('Please use submit instead.', DeprecationWarning, stacklevel=2)
-        return self.submit(quiet=quiet, url=url, document=document, document_name=document_name,
-                           **kwargs)
+        r = self.submit(quiet=quiet, url=url, document=document, document_name=document_name,
+                        **kwargs)
+        if isinstance(r, dict):
+            return r['uuid']
+        return r
 
     @overload
     def submit(self, *, quiet: bool=False,
-               capture_settings: LookylooCaptureSettings | dict[str, Any] | None=None) -> str:
+               capture_settings: LookylooCaptureSettings | dict[str, Any] | None=None) -> str | dict[str, str]:
         ...
 
     @overload
@@ -169,12 +172,49 @@ class Lookyloo():
                final_wait: int=1,
                # Lookyloo specific
                listing: bool=False,
-               private: bool=False,
+               private: Literal[False]=False,
                auto_report: bool | dict[str, str] | None=None,
                remote_lacus_name: str | None=None,
                categories: list[str] | None=None,
                monitor_capture: dict[str, str | bool] | None=None,
                ) -> str:
+        ...
+
+    @overload
+    def submit(self, *, quiet: bool=False,
+               url: str | None=None,
+               document_name: str | None=None, document: Path | BytesIO | None=None,
+               browser: Literal['chromium', 'firefox', 'webkit'] | None=None,
+               device_name: str | None=None,
+               user_agent: str | None=None,
+               proxy: str | dict[str, str] | None=None,
+               general_timeout_in_sec: int | None=None,
+               cookies: list[dict[str, Any]] | list[Cookie] | None=None,
+               storage: str | dict[str, Any] | None=None,
+               headers: str | dict[str, str] | None=None,
+               http_credentials: dict[str, str] | HttpCredentialsSettings | None=None,
+               geolocation: dict[str, str | int | float] | GeolocationSettings | None=None,
+               timezone_id: str | None=None,
+               locale: str | None=None,
+               color_scheme: Literal['dark', 'light', 'no-preference', 'null'] | None=None,
+               java_script_enabled: bool=True,
+               viewport: dict[str, str | int] | ViewportSettings | None=None,
+               referer: str | None=None,
+               with_screenshot: bool=True,
+               with_favicon: bool=True,
+               allow_tracking: bool=False,
+               headless: bool=True,
+               init_script: str | None=None,
+               with_trusted_timestamps: bool=False,
+               final_wait: int=1,
+               # Lookyloo specific
+               listing: bool=False,
+               private: Literal[True]=True,
+               auto_report: bool | dict[str, str] | None=None,
+               remote_lacus_name: str | None=None,
+               categories: list[str] | None=None,
+               monitor_capture: dict[str, str | bool] | None=None,
+               ) -> dict[str, str]:
         ...
 
     def submit(self, *, quiet: bool=False,
@@ -352,32 +392,32 @@ class Lookyloo():
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', 'get_user_config'))))
         return r.json()
 
-    def misp_export(self, tree_uuid: str) -> dict[str, Any]:
+    def misp_export(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Export the capture in MISP format'''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_export'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_export'))), params={'seed': seed})
         return r.json()
 
-    def ai_export(self, tree_uuid: str) -> dict[str, Any]:
+    def ai_export(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Export the capture in a format you can shove in a model'''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'ai_export'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'ai_export'))), params={'seed': seed})
         return r.json()
 
-    def misp_push(self, tree_uuid: str) -> dict[str, Any] | list[dict[str, Any]]:
+    def misp_push(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any] | list[dict[str, Any]]:
         '''Push the capture to a pre-configured MISP instance (requires an authenticated user, use init_apikey first)
         Note: if the response is a dict, it is an error mesage. If it is a list, it's a list of MISP event.
         '''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_push'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'misp_push'))), params={'seed': seed})
         return r.json()
 
-    def trigger_modules(self, tree_uuid: str, force: bool=False) -> dict[str, Any]:
+    def trigger_modules(self, tree_uuid: str, force: bool=False, *, seed: str | None=None) -> dict[str, Any]:
         '''Trigger all the available 3rd party modules on the given capture.
         :param force: Trigger the modules even if they were already triggered today.
         '''
         to_send = {'force': force}
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'trigger_modules'))),
-                              json=to_send)
+                              json=to_send, params={'seed': seed})
         return r.json()
 
     def rebuild_capture(self, tree_uuid: str) -> dict[str, str]:
@@ -387,11 +427,21 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'rebuild'))))
         return r.json()
 
-    def hide_capture(self, tree_uuid: str) -> dict[str, str]:
-        '''Hide a capture from the index page (requires an authenticated user, use init_apikey first)'''
+    def hide_capture(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, str]:
+        '''Hide a capture from the index page (allowed for unauthenticated users for public captures)'''
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'hide'))), params={'seed': seed})
+        return r.json()
+
+    def private_capture(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, str]:
+        '''Make a capture private, returns a (new) seed'''
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'private'))), params={'seed': seed})
+        return r.json()
+
+    def public_capture(self, tree_uuid: str) -> dict[str, str]:
+        '''Makes capture public (from unlisted or private). Only an admin is allowed to do that, even with a seed.'''
         if not self.apikey:
             raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
-        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'hide'))))
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'remove'))))
         return r.json()
 
     def remove_capture(self, tree_uuid: str) -> dict[str, str]:
@@ -401,120 +451,120 @@ class Lookyloo():
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('admin', tree_uuid, 'remove'))))
         return r.json()
 
-    def get_favicons(self, capture_uuid: str) -> dict[str, Any]:
+    def get_favicons(self, capture_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Returns the potential favicons of the capture.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'favicons'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'favicons'))), params={'seed': seed})
         return r.json()
 
-    def get_redirects(self, capture_uuid: str) -> dict[str, Any]:
+    def get_redirects(self, capture_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Returns the initial redirects.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'redirects'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'redirects'))), params={'seed': seed})
         return r.json()
 
-    def get_urls(self, capture_uuid: str) -> dict[str, Any]:
+    def get_urls(self, capture_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Returns all the URLs seen during the capture.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'urls'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'urls'))), params={'seed': seed})
         return r.json()
 
-    def get_hostnames(self, capture_uuid: str) -> dict[str, Any]:
+    def get_hostnames(self, capture_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Returns all the hostnames seen during the capture.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'hostnames'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'hostnames'))), params={'seed': seed})
         return r.json()
 
-    def get_ips(self, capture_uuid: str) -> dict[str, Any]:
+    def get_ips(self, capture_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Returns all the IPs seen during the capture.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'ips'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'ips'))), params={'seed': seed})
         return r.json()
 
-    def get_screenshot(self, capture_uuid: str) -> BytesIO:
+    def get_screenshot(self, capture_uuid: str, *, seed: str | None=None) -> BytesIO:
         '''Returns the screenshot.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'screenshot'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'screenshot'))), params={'seed': seed})
         return BytesIO(r.content)
 
-    def get_data(self, capture_uuid: str) -> BytesIO:
+    def get_data(self, capture_uuid: str, *, seed: str | None=None) -> BytesIO:
         '''Returns the downloaded data.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'data'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'data'))), params={'seed': seed})
         return BytesIO(r.content)
 
-    def get_cookies(self, capture_uuid: str) -> list[dict[str, str]]:
+    def get_cookies(self, capture_uuid: str, *, seed: str | None=None) -> list[dict[str, str]]:
         '''Returns the complete cookies jar.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'cookies'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'cookies'))), params={'seed': seed})
         return r.json()
 
-    def get_storage(self, capture_uuid: str) -> dict[str, Any]:
+    def get_storage(self, capture_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Returns the complete storage state.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'storage_state'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'storage_state'))), params={'seed': seed})
         return r.json()
 
-    def get_console_messages(self, capture_uuid: str) -> list[dict[str, Any]]:
+    def get_console_messages(self, capture_uuid: str, *, seed: str | None=None) -> list[dict[str, Any]]:
         '''Returns the messages printed in the console during the capture.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'console_messages'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'console_messages'))), params={'seed': seed})
         return r.json()
 
-    def get_html_as_markdown(self, capture_uuid: str) -> StringIO:
+    def get_html_as_markdown(self, capture_uuid: str, *, seed: str | None=None) -> StringIO:
         '''Returns the rendered HTML as it is in the browser after the page loaded, and convert it to markdown.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('tree', capture_uuid, 'html_as_markdown'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('tree', capture_uuid, 'html_as_markdown'))), params={'seed': seed})
         return StringIO(r.text)
 
-    def get_html(self, capture_uuid: str) -> StringIO:
+    def get_html(self, capture_uuid: str, *, seed: str | None=None) -> StringIO:
         '''Returns the rendered HTML as it is in the browser after the page loaded.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('tree', capture_uuid, 'html'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('tree', capture_uuid, 'html'))), params={'seed': seed})
         return StringIO(r.text)
 
-    def get_hashes(self, capture_uuid: str, algorithm: str='sha512', hashes_only: bool=True) -> StringIO:
+    def get_hashes(self, capture_uuid: str, algorithm: str='sha512', hashes_only: bool=True, *, seed: str | None=None) -> StringIO:
         '''Returns all the hashes of all the bodies (including the embedded contents)
 
         :param capture_uuid: UUID of the capture
         :param algorithm: The algorithm of the hashes
         :param hashes_only: If False, will also return the URLs related to the hashes
         '''
-        params: dict[str, str | int] = {'algorithm': algorithm, 'hashes_only': int(hashes_only)}
+        params: dict[str, str | int | None] = {'algorithm': algorithm, 'hashes_only': int(hashes_only), 'seed': seed}
 
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', capture_uuid, 'hashes'))), params=params)
         return r.json()
 
-    def get_complete_capture(self, capture_uuid: str) -> BytesIO:
+    def get_complete_capture(self, capture_uuid: str, *, seed: str | None=None) -> BytesIO:
         '''Returns a zip files that contains the screenshot, the har, the rendered HTML, and the cookies.
 
         :param capture_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'export'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'export'))), params={'seed': seed})
         return BytesIO(r.content)
 
     def get_hash_occurrences(self, h: str, *, with_urls_occurrences: bool=False, cached_captures_only: bool=True, limit: int=20, offset: int=0) -> dict[str, Any]:
@@ -598,21 +648,21 @@ class Lookyloo():
         return r.json()
 
     @overload
-    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[True]) -> list[str]:
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[True], *, seed: str | None = None) -> list[str]:
         ...
 
     @overload
-    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[False]=False) -> list[dict[str, Any]]:
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: Literal[False]=False, *, seed: str | None = None) -> list[dict[str, Any]]:
         ...
 
-    def get_takedown_information(self, capture_uuid: str, filter_contacts: bool=False) -> list[dict[str, Any]] | list[str]:
+    def get_takedown_information(self, capture_uuid: str, filter_contacts: bool=False, *, seed: str | None = None) -> list[dict[str, Any]] | list[str]:
         '''Returns information required to request a takedown for a capture
 
         :param capture_uuid: UUID of the capture
         :param filter_contacts: If True, will only return the contact emails and filter out the invalid ones.
         '''
         r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', 'takedown'))),
-                              json={'capture_uuid': capture_uuid, 'filter': filter_contacts})
+                              json={'capture_uuid': capture_uuid, 'filter': filter_contacts, 'seed': seed})
         return r.json()
 
     def compare_captures(self, capture_left: str, capture_right: str, /, *, compare_settings: CompareSettings | dict[str, Any] | None=None) -> dict[str, Any]:
@@ -634,15 +684,15 @@ class Lookyloo():
                                     'compare_settings': cs.model_dump_json() if cs else None})
         return r.json()
 
-    def get_modules_responses(self, tree_uuid: str) -> dict[str, Any]:
+    def get_modules_responses(self, tree_uuid: str, *, seed: str | None=None) -> dict[str, Any]:
         '''Returns information from the 3rd party modules
 
-        :param capture_uuid: UUID of the capture
+        :param tree_uuid: UUID of the capture
         '''
-        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'modules'))))
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'modules'))), params={'seed': seed})
         return r.json()
 
-    def send_mail(self, tree_uuid: str, email: str = '', comment: str | None = None) -> bool | dict[str, Any]:
+    def send_mail(self, tree_uuid: str, email: str = '', comment: str | None = None, *, seed: str | None=None) -> bool | dict[str, Any]:
         '''Reports a capture by sending an email to the investigation team
 
         :param tree_uuid: UUID of the capture
@@ -652,7 +702,8 @@ class Lookyloo():
         to_send = {'email': email}
         if comment:
             to_send['comment'] = comment
-        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))), json=to_send)
+        r = self.session.post(urljoin(self.root_url, str(PurePosixPath('json', tree_uuid, 'report'))),
+                              json=to_send, params={'seed': seed})
         return r.json()
 
     def get_recent_captures(self, timestamp: str | datetime | float | None=None) -> list[str]:
