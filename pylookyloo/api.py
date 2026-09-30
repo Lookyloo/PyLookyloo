@@ -165,6 +165,7 @@ class Lookyloo():
                referer: str | None=None,
                with_screenshot: bool=True,
                with_favicon: bool=True,
+               with_video: bool=False,
                allow_tracking: bool=False,
                headless: bool=True,
                init_script: str | None=None,
@@ -202,6 +203,7 @@ class Lookyloo():
                referer: str | None=None,
                with_screenshot: bool=True,
                with_favicon: bool=True,
+               with_video: bool=False,
                allow_tracking: bool=False,
                headless: bool=True,
                init_script: str | None=None,
@@ -239,6 +241,7 @@ class Lookyloo():
                referer: str | None=None,
                with_screenshot: bool=True,
                with_favicon: bool=True,
+               with_video: bool=False,
                allow_tracking: bool=False,
                headless: bool=True,
                init_script: str | None=None,
@@ -279,6 +282,7 @@ class Lookyloo():
         :param referer: The referer URL for the capture
         :param with_screenshot: Is False, do not take a screenshot at the end of the capture
         :param with_favicon: If False, do not try to find favicons in the rendered page
+        :param with_video: [Admin only] If True, takes a video of the capture
         :param allow_tracking: If True, attempt to find the overlay asking for the permission to track you and allow everything (best effort, please get in touch if needed)
         :param headless: If False, the browser will be headed, it requires the capture to be done on a desktop.
         :param init_script: JavaScript code to inject in the rendered page, before the page starts loading.
@@ -327,6 +331,7 @@ class Lookyloo():
                 'referer': referer,
                 'with_screenshot': with_screenshot,
                 'with_favicon': with_favicon,
+                'with_video': with_video,
                 'allow_tracking': allow_tracking,
                 'headless': headless,
                 'init_script': init_script,
@@ -505,6 +510,14 @@ class Lookyloo():
         :param capture_uuid: UUID of the capture
         '''
         r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'data'))), params={'seed': seed})
+        return BytesIO(r.content)
+
+    def get_video(self, capture_uuid: str, *, seed: str | None=None) -> BytesIO:
+        '''Returns the video of the capture
+
+        :param capture_uuid: UUID of the capture
+        '''
+        r = self.session.get(urljoin(self.root_url, str(PurePosixPath('bin', capture_uuid, 'video'))), params={'seed': seed})
         return BytesIO(r.content)
 
     def get_cookies(self, capture_uuid: str, *, seed: str | None=None) -> list[dict[str, str]]:
