@@ -45,7 +45,7 @@ examples = ["pylacus (>=1.27.0)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^2.4.0"
-types-requests = "^2.33.0.20260906"
+types-requests = "^2.33.0.20261006"
 pytest = "^9.1.1"
 types-deprecated = {version="^1.3.1.20260928", markers="python_version < \"3.13\""}
 
