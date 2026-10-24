@@ -1,19 +1,19 @@
 [project]
 name = "pylookyloo"
-version = "1.42.0"
+version = "1.43.0"
 description = "Python CLI and module for Lookyloo"
 authors = [
     {name="Raphaël Vinot", email="raphael.vinot@circl.lu"}
 ]
 license = "GPL-2.0-or-later"
 readme = "README.md"
-requires-python = ">=3.10,<3.15"
+requires-python = ">=3.11,<3.16"
 
 dynamic = [ "classifiers" ]
 
 dependencies = [
     "requests (>=2.34.2)",
-    "lookyloo-models (>=0.4.6)",
+    "lookyloo-models (>=0.5.0)",
     "deprecated (>=1.3.1,<2.0.0) ; python_version < \"3.13\"",
     "pydantic (>=2.12.5,<3.0.0)",
     "urllib3 (>=2.6.3,<3.0.0)"
@@ -40,12 +40,12 @@ classifiers = [
 lookyloo = 'pylookyloo:main'
 
 [project.optional-dependencies]
-docs = ["sphinx (>=9.1.0) ; python_version >= \"3.12\""]
-examples = ["pylacus (>=1.27.0)"]
+docs = ["sphinx (>=9.2.0) ; python_version >= \"3.13\""]
+examples = ["pylacus (>=1.28.0)"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^2.4.0"
-types-requests = "^2.33.0.20260906"
+types-requests = "^2.33.0.20261006"
 pytest = "^9.1.1"
 types-deprecated = {version="^1.3.1.20260928", markers="python_version < \"3.13\""}
 
