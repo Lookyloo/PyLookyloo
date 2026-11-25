@@ -1731,4 +1731,4 @@ examples = ["pylacus"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.16"
-content-hash = "b1d87759026e2a78251092a8cc715b2c202ec4353ea7b4c23d40267a0b3f4b1a"
+content-hash = "18e95ec75db1904e09f6a710138a157ae1ce2fe5215999930ef72245afdc0a1d"

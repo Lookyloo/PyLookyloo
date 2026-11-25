@@ -14,7 +14,7 @@ dynamic = [ "classifiers" ]
 dependencies = [
     "requests (>=2.34.2)",
     "lookyloo-models (>=0.5.0)",
-    "pydantic (>=2.12.5,<3.0.0)",
+    "pydantic (>=2.14.4,<3.0.0)",
     "urllib3 (>=2.6.3,<3.0.0)"
 ]
 
